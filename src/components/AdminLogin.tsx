@@ -1,19 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 const ADMIN_PASSWORD = 'xianlu2024'; // 后台密码
 
-export default function AdminLogin() {
+export default function AdminLogin({ onLogin }: { onLogin: () => void }) {
   const [pw, setPw] = useState('');
   const [err, setErr] = useState('');
-  const router = useRouter();
 
   function login() {
     if (pw === ADMIN_PASSWORD) {
       localStorage.setItem('xianlu_admin', '1');
-      router.refresh();
+      onLogin(); // 通知父组件更新状态
     } else {
       setErr('密码错误，请重试');
     }

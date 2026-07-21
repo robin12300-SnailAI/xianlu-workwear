@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import AdminLogin from '@/components/AdminLogin';
 import AdminPanel from '@/components/AdminPanel';
 
@@ -9,11 +8,17 @@ export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
   const [checked, setChecked] = useState(false);
 
-  useEffect(() => {
-    const ok = localStorage.getItem('xianlu_admin') === '1';
+  // 首次加载检查登录态
+  function checkAuth() {
+    const ok = typeof window !== 'undefined' && localStorage.getItem('xianlu_admin') === '1';
     setAuthed(ok);
     setChecked(true);
-  }, []);
+  }
+
+  // 登录成功回调
+  function handleLogin() {
+    setAuthed(true);
+  }
 
   // 登出
   function logout() {
@@ -21,9 +26,14 @@ export default function AdminPage() {
     setAuthed(false);
   }
 
+  // 客户端 hydration 后检查登录态
+  if (typeof window !== 'undefined' && !checked) {
+    checkAuth();
+  }
+
   if (!checked) return null; // 等待 hydration
 
-  if (!authed) return <AdminLogin />;
+  if (!authed) return <AdminLogin onLogin={handleLogin} />;
 
   return (
     <div className="max-w-3xl mx-auto">
