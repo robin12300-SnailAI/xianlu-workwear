@@ -3,40 +3,45 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+const ADMIN_PASSWORD = 'xianlu2024'; // 后台密码
+
 export default function AdminLogin() {
   const [pw, setPw] = useState('');
   const [err, setErr] = useState('');
   const router = useRouter();
 
-  async function login() {
-    const r = await fetch('/api/admin/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pw }),
-    });
-    const d = await r.json();
-    if (d.ok) router.refresh();
-    else setErr(d.error || '失败');
+  function login() {
+    if (pw === ADMIN_PASSWORD) {
+      localStorage.setItem('xianlu_admin', '1');
+      router.refresh();
+    } else {
+      setErr('密码错误，请重试');
+    }
   }
 
   return (
-    <div className="max-w-sm mx-auto mt-20 bg-white border rounded-xl p-6">
-      <h1 className="font-bold text-lg mb-3">后台登录</h1>
+    <div className="max-w-sm mx-auto mt-20 bg-white border rounded-xl p-6 shadow-sm">
+      <h1 className="font-bold text-lg mb-1">仙路后台登录</h1>
+      <p className="text-xs text-gray-400 mb-4">GitHub Pages 静态版 · 密码保护</p>
       <input
         type="password"
         value={pw}
         onChange={(e) => setPw(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && login()}
-        className="w-full border rounded px-3 py-2"
-        placeholder="输入 ADMIN_PASSWORD"
+        className="w-full border rounded px-3 py-2 text-sm"
+        placeholder="输入后台密码"
+        autoFocus
       />
-      {err && <p className="text-red-500 text-sm mt-2">{err}</p>}
+      {err && <p className="text-red-500 text-xs mt-2">{err}</p>}
       <button
         onClick={login}
-        className="w-full bg-brand text-white font-semibold py-2 rounded-lg mt-3"
+        className="w-full bg-brand text-white font-semibold py-2 rounded-lg mt-3 text-sm hover:bg-brand/90 transition"
       >
         登录
       </button>
+      <p className="text-xs text-gray-400 mt-3 text-center">
+        密码：<code className="bg-gray-100 px-1 rounded">xianlu2024</code>
+      </p>
     </div>
   );
 }
