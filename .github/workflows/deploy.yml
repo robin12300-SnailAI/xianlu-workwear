@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 静态导出不支持动态路由（API、sitemap、robots），构建前移除
+      # 静态导出不支持 API 路由、sitemap、robots
       - name: Remove dynamic routes for static export
         run: |
           rm -rf src/app/api

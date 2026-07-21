@@ -2,9 +2,6 @@ import Link from 'next/link';
 import { getProducts, getCategories } from '@/lib/products';
 import ProductCard from '@/components/ProductCard';
 
-// 每次请求都读最新产品（文件数据，方便后台改完立即生效）
-export const dynamic = 'force-dynamic';
-
 export default async function Home() {
   const products = await getProducts();
   const categories = await getCategories();

@@ -1,9 +1,13 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { getProductBySlug } from '@/lib/products';
+import { getProductBySlug, getProducts } from '@/lib/products';
 import AddToCartButton from '@/components/AddToCartButton';
 
-export const dynamic = 'force-dynamic';
+// 静态导出：预生成所有产品页面
+export async function generateStaticParams() {
+  const products = getProducts();
+  return products.map((p) => ({ slug: p.slug }));
+}
 
 export async function generateMetadata({
   params,

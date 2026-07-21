@@ -1,18 +1,24 @@
+'use client';
+
 import Link from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import type { Product } from '@/lib/types';
 import { getProducts, getCategories } from '@/lib/products';
 import ProductCard from '@/components/ProductCard';
 
-export const dynamic = 'force-dynamic';
+function ProductsContent() {
+  const searchParams = useSearchParams();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
 
-export default async function ProductsPage({
-  searchParams,
-}: {
-  searchParams: { cat?: string };
-}) {
-  const all = await getProducts();
-  const categories = await getCategories();
-  const active = searchParams.cat;
-  const filtered = active ? all.filter((p) => p.category === active) : all;
+  useEffect(() => {
+    setProducts(getProducts());
+    setCategories(getCategories());
+  }, []);
+
+  const active = searchParams.get('cat');
+  const filtered = active ? products.filter((p) => p.category === active) : products;
 
   return (
     <div>
@@ -50,5 +56,13 @@ export default async function ProductsPage({
         </div>
       )}
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div className="py-10 text-center text-gray-400">Loading...</div>}>
+      <ProductsContent />
+    </Suspense>
   );
 }
