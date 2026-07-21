@@ -5,11 +5,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // 仙路品牌主色（可改成你喜欢的颜色）
+        // Bocini-inspired palette
         brand: {
-          DEFAULT: '#1d4ed8',
-          dark: '#1e3a8a',
+          DEFAULT: '#212529',   // dark navy/black (Bocini header bg)
+          light: '#f4f6f8',    // light gray body bg
         },
+        accent: {
+          DEFAULT: '#0d6efd',   // blue accent (Bocini blue)
+        },
+      },
+      fontFamily: {
+        sans: ['Montserrat', 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        heading: ['Montserrat', 'Inter', 'sans-serif'],
       },
     },
   },
