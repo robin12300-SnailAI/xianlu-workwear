@@ -16,3 +16,9 @@ export function getCategories(): string[] {
   const all = getProducts();
   return Array.from(new Set(all.map((p) => p.category)));
 }
+
+// Stub: static export cannot write back to the filesystem at runtime.
+// Use this only if you later move to a Node.js server or serverless deployment.
+export async function saveProducts(_products: Product[]): Promise<void> {
+  throw new Error('saveProducts is not available in static export mode');
+}

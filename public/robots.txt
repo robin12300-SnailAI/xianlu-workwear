@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api
+
+Sitemap: https://robin12300-snailai.github.io/xianlu-workwear/sitemap.xml
