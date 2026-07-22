@@ -16,7 +16,7 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <p className="text-gray-500">
-        购物车为空，<a className="text-brand" href="/products">去选购 →</a>
+        购物车为空，<a className="text-accent" href="/products">去选购 →</a>
       </p>
     );
   }
@@ -127,7 +127,7 @@ export default function CheckoutPage() {
         <button
           onClick={submit}
           disabled={loading}
-          className="w-full bg-brand text-white font-semibold py-3 rounded-lg mt-4 hover:bg-brand-dark disabled:opacity-60"
+          className="w-full bg-accent text-[var(--accent-ink)] font-semibold py-3 rounded-lg mt-4 hover:brightness-105 disabled:opacity-60 transition"
         >
           {loading ? '处理中…' : '用 Stripe 付款'}
         </button>

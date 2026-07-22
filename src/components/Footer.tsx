@@ -1,59 +1,87 @@
+'use client';
+
 import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#f8f9fa] border-t border-gray-200 mt-12 pt-4">
-      <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-8">
-        {/* Company */}
-        <div>
-          <h5 className="font-semibold text-sm mb-3 text-[#212529] uppercase tracking-wider">Company</h5>
-          <div className="space-y-2">
-            <Link href="/" className="footer-link block">Website: xianluworkwear.com.au</Link>
-            <Link href="/about" className="footer-link block">About Us</Link>
+    <footer className="mt-20 bg-[var(--surface)] border-t border-[var(--border)]">
+      <div className="container-x py-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+        {/* Brand */}
+        <div className="lg:col-span-1">
+          <div className="flex items-center gap-2.5 mb-4">
+            <span className="grid place-items-center w-9 h-9 rounded-lg bg-[var(--accent)] text-[var(--accent-ink)] font-head font-bold text-lg">
+              X
+            </span>
+            <span className="font-head font-bold text-lg text-[var(--ink)]">
+              Xianlu<span className="text-[var(--accent)]">.</span>
+            </span>
+          </div>
+          <p className="text-sm text-[var(--ink-2)] leading-relaxed max-w-xs">
+            Australia&apos;s trusted workwear &amp; corporate apparel supplier. Premium garments,
+            logo embroidery and Australia-wide delivery since 2024.
+          </p>
+          <div className="flex gap-2 mt-4">
+            <span className="chip">AS/NZS Certified</span>
           </div>
         </div>
 
-        {/* Customer Service */}
+        {/* Shop */}
         <div>
-          <h5 className="font-semibold text-sm mb-3 text-[#212529] uppercase tracking-wider">Customer Service</h5>
-          <div className="space-y-2">
-            <Link href="/cart" className="footer-link block">My Cart</Link>
-            <Link href="/products" className="footer-link block">Measurements Guide</Link>
-            <Link href="/return-policy" className="footer-link block">Return &amp; Refund Policy</Link>
+          <h5 className="font-head font-semibold text-sm mb-4 text-[var(--ink)] uppercase tracking-wider">
+            Shop
+          </h5>
+          <div className="space-y-2.5">
+            <Link href="/products" className="footer-link block">All Products</Link>
+            <Link href="/products?cat=HiVis" className="footer-link block">Hi-Vis</Link>
+            <Link href="/products?cat=Workwear" className="footer-link block">Workwear</Link>
+            <Link href="/products?cat=Corporate" className="footer-link block">Corporate</Link>
+            <Link href="/products?cat=Chef" className="footer-link block">Chef &amp; Hospitality</Link>
           </div>
         </div>
 
-        {/* Resources */}
+        {/* Services */}
         <div>
-          <h5 className="font-semibold text-sm mb-3 text-[#212529] uppercase tracking-wider">Resources</h5>
-          <div className="space-y-2">
-            <Link href="/products" className="footer-link block">Product Range</Link>
+          <h5 className="font-head font-semibold text-sm mb-4 text-[var(--ink)] uppercase tracking-wider">
+            Services
+          </h5>
+          <div className="space-y-2.5">
+            <Link href="/products" className="footer-link block">Embroidery</Link>
+            <Link href="/products" className="footer-link block">Screen Printing</Link>
+            <Link href="/products" className="footer-link block">Dye Sublimation</Link>
+            <Link href="/products?cat=Workwear" className="footer-link block">Indent Service</Link>
             <a href="mailto:info@xianlu.com.au" className="footer-link block">Contact Us</a>
           </div>
         </div>
 
-        {/* Stay Connected */}
+        {/* Newsletter */}
         <div>
-          <h5 className="font-semibold text-sm mb-3 text-[#212529] uppercase tracking-wider">Stay Connected</h5>
-          <p className="text-sm text-gray-500 mb-3">
-            Be among the first to get product launches, sales offers &amp; more.
+          <h5 className="font-head font-semibold text-sm mb-4 text-[var(--ink)] uppercase tracking-wider">
+            Stay Connected
+          </h5>
+          <p className="text-sm text-[var(--ink-2)] mb-3 leading-relaxed">
+            Be first to hear about new ranges, restocks &amp; offers.
           </p>
-          <div className="flex gap-2">
+          <form
+            className="flex gap-2"
+            onSubmit={(e) => e.preventDefault()}
+          >
             <input
               type="email"
-              placeholder="Your Email"
-              className="border border-gray-300 rounded px-3 py-1.5 text-sm flex-1 focus:outline-none focus:border-[#0d6efd]"
+              required
+              placeholder="Your email"
+              className="flex-1 min-w-0 bg-[var(--surface-2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--ink)] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)]"
             />
-            <button className="bg-[#0d6efd] text-white px-3 py-1.5 rounded text-sm hover:bg-blue-600 transition">
-              Subscribe
-            </button>
-          </div>
+            <button className="btn-primary px-4 py-2 text-sm">Join</button>
+          </form>
         </div>
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-gray-200 py-3 text-center text-xs text-gray-500">
-        &copy; {new Date().getFullYear()} Xianlu Workwear. All rights reserved. | Paddy&apos;s Market, Sydney NSW
+      <div className="border-t border-[var(--border)]">
+        <div className="container-x py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[var(--muted)]">
+          <span>&copy; {new Date().getFullYear()} Xianlu Workwear. All rights reserved.</span>
+          <span>Paddy&apos;s Market, Sydney NSW · Australia-wide delivery</span>
+        </div>
       </div>
     </footer>
   );

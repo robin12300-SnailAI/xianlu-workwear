@@ -27,8 +27,8 @@ function ProductsContent() {
       <div className="flex flex-wrap gap-2 mb-6">
         <Link
           href="/products"
-          className={`px-4 py-2 border rounded-full text-sm ${
-            !active ? 'bg-brand text-white' : 'bg-white'
+          className={`px-4 py-2 border rounded-full text-sm transition ${
+            !active ? 'bg-accent text-[var(--accent-ink)] border-accent' : 'bg-surface text-ink border-[var(--border)]'
           }`}
         >
           All
@@ -37,8 +37,8 @@ function ProductsContent() {
           <Link
             key={c}
             href={`/products?cat=${c}`}
-            className={`px-4 py-2 border rounded-full text-sm ${
-              active === c ? 'bg-brand text-white' : 'bg-white'
+            className={`px-4 py-2 border rounded-full text-sm transition ${
+              active === c ? 'bg-accent text-[var(--accent-ink)] border-accent' : 'bg-surface text-ink border-[var(--border)]'
             }`}
           >
             {c}

@@ -28,7 +28,7 @@ export default function SuccessPage() {
       </p>
       <Link
         href="/products"
-        className="inline-block mt-6 bg-brand text-white font-semibold px-5 py-3 rounded-lg"
+        className="inline-block mt-6 bg-accent text-[var(--accent-ink)] font-semibold px-5 py-3 rounded-lg hover:brightness-105 transition"
       >
         继续浏览
       </Link>

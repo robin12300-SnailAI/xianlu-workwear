@@ -7,7 +7,7 @@
     "description": "高可视双色 Polo 衫，符合澳洲工地安全标准，吸汗透气，适合建筑与运输行业。",
     "price": 24.95,
     "images": [
-      "/images/products/prod-1784033379788-ayy4.png"
+      "https://loremflickr.com/600/600/workwear,hi-vis?lock=71"
     ],
     "colors": [
       "Orange",
@@ -33,7 +33,7 @@
     "description": "昼夜两用高可视夹克，防风防水，带反光条，适合户外与夜间作业。",
     "price": 59.95,
     "images": [
-      "https://placehold.co/600x600/1d4ed8/ffffff?text=HiVis+Jacket"
+      "https://loremflickr.com/600/600/workwear,jacket?lock=72"
     ],
     "colors": [
       "Orange",
@@ -58,7 +58,7 @@
     "description": "多口袋工装裤，耐磨面料，膝部加固，适合各类体力工作。",
     "price": 39.95,
     "images": [
-      "https://placehold.co/600x600/1d4ed8/ffffff?text=Cargo+Pants"
+      "https://loremflickr.com/600/600/workwear,pants?lock=73"
     ],
     "colors": [
       "Navy",
@@ -85,7 +85,7 @@
     "description": "商务牛津衬衫，挺括有型，可刺绣企业 Logo，适合企业制服。",
     "price": 29.95,
     "images": [
-      "https://placehold.co/600x600/1d4ed8/ffffff?text=Oxford+Shirt"
+      "https://loremflickr.com/600/600/shirt,corporate?lock=74"
     ],
     "colors": [
       "White",
@@ -111,7 +111,7 @@
     "description": "专业厨师服，双排扣，透气棉混纺，餐饮行业标配。",
     "price": 34.95,
     "images": [
-      "https://placehold.co/600x600/1d4ed8/ffffff?text=Chef+Jacket"
+      "https://loremflickr.com/600/600/chef,uniform?lock=75"
     ],
     "colors": [
       "White",
@@ -136,7 +136,7 @@
     "description": "餐饮服务员围裙，加厚耐洗，可印 Logo，多颜色可选。",
     "price": 19.95,
     "images": [
-      "https://placehold.co/600x600/1d4ed8/ffffff?text=Apron"
+      "https://loremflickr.com/600/600/apron,restaurant?lock=76"
     ],
     "colors": [
       "Black",
@@ -158,7 +158,7 @@
     "description": "保暖针织帽，适合户外与冬季作业，可绣 Logo。",
     "price": 9.95,
     "images": [
-      "https://placehold.co/600x600/1d4ed8/ffffff?text=Beanie"
+      "https://loremflickr.com/600/600/beanie,knit?lock=77"
     ],
     "colors": [
       "Black",

@@ -16,14 +16,14 @@ export default function AddToCartButton({ product }: { product: Product }) {
     <div className="space-y-4">
       {product.colors.length > 0 && (
         <div>
-          <div className="text-sm text-gray-500 mb-1">颜色</div>
+          <div className="text-sm text-[var(--muted)] mb-1">颜色</div>
           <div className="flex gap-2 flex-wrap">
             {product.colors.map((c) => (
               <button
                 key={c}
                 onClick={() => setColor(c)}
-                className={`px-3 py-1 border rounded ${
-                  color === c ? 'border-brand text-brand' : 'border-gray-300'
+                className={`px-3 py-1 border rounded transition ${
+                  color === c ? 'border-accent text-accent' : 'border-[var(--border)] text-[var(--ink)]'
                 }`}
               >
                 {c}
@@ -35,14 +35,14 @@ export default function AddToCartButton({ product }: { product: Product }) {
 
       {product.sizes.length > 0 && (
         <div>
-          <div className="text-sm text-gray-500 mb-1">尺码</div>
+          <div className="text-sm text-[var(--muted)] mb-1">尺码</div>
           <div className="flex gap-2 flex-wrap">
             {product.sizes.map((s) => (
               <button
                 key={s}
                 onClick={() => setSize(s)}
-                className={`px-3 py-1 border rounded ${
-                  size === s ? 'border-brand text-brand' : 'border-gray-300'
+                className={`px-3 py-1 border rounded transition ${
+                  size === s ? 'border-accent text-accent' : 'border-[var(--border)] text-[var(--ink)]'
                 }`}
               >
                 {s}
@@ -76,7 +76,7 @@ export default function AddToCartButton({ product }: { product: Product }) {
           });
           router.push('/cart');
         }}
-        className="w-full bg-brand text-white font-semibold py-3 rounded-lg hover:bg-brand-dark"
+        className="w-full bg-accent text-[var(--accent-ink)] font-semibold py-3 rounded-lg hover:brightness-105 transition"
       >
         加入购物车
       </button>

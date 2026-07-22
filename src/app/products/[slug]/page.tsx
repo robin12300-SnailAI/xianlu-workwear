@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getProductBySlug, getProducts } from '@/lib/products';
 import AddToCartButton from '@/components/AddToCartButton';
+import SmartImage from '@/components/SmartImage';
 
 // 静态导出：预生成所有产品页面
 export async function generateStaticParams() {
@@ -31,30 +32,41 @@ export default async function ProductDetail({
   if (!product) notFound();
 
   return (
-    <div className="grid md:grid-cols-2 gap-8">
-      <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+    <div className="grid md:grid-cols-2 gap-10">
+      <div className="card overflow-hidden aspect-square">
+        <SmartImage
           src={product.images[0]}
+          seed={product.slug}
           alt={product.seoDescription || product.name}
           className="w-full h-full object-cover"
         />
       </div>
 
       <div>
-        <div className="text-sm text-gray-400">{product.category}</div>
-        <h1 className="text-2xl font-bold mt-1">{product.name}</h1>
-        <div className="text-2xl text-brand font-semibold mt-2">
-          ${product.price.toFixed(2)}
+        <div className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
+          {product.category}
         </div>
-        <p className="text-gray-600 mt-4">{product.description}</p>
+        <h1 className="font-head font-bold text-3xl mt-1.5 text-[var(--ink)]">{product.name}</h1>
+        <div className="text-3xl font-bold text-[var(--accent)] mt-3">${product.price.toFixed(2)}</div>
+        <p className="text-[var(--ink-2)] mt-5 leading-relaxed">{product.description}</p>
 
-        <div className="mt-6">
+        {product.colors?.length > 0 && (
+          <div className="mt-5">
+            <div className="text-sm font-semibold text-[var(--ink)] mb-2">Colours</div>
+            <div className="flex flex-wrap gap-2">
+              {product.colors.map((c) => (
+                <span key={c} className="chip">{c}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="mt-7">
           <AddToCartButton product={product} />
         </div>
 
-        <div className="mt-6 text-sm text-gray-500">
-          {product.inStock ? '✅ 现货，全澳配送' : '⏳ 需预订'}
+        <div className="mt-5 text-sm font-medium text-[var(--ink-2)]">
+          {product.inStock ? '✅ In stock · Australia-wide delivery' : '⏳ Made to order'}
         </div>
       </div>
     </div>

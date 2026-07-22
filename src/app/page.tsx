@@ -1,169 +1,209 @@
 import Link from 'next/link';
 import { getProducts, getCategories } from '@/lib/products';
 import ProductCard from '@/components/ProductCard';
+import HeroCarousel from '@/components/HeroCarousel';
+import Reveal from '@/components/Reveal';
+import SmartImage from '@/components/SmartImage';
 
 export default async function Home() {
   const products = await getProducts();
   const categories = await getCategories();
 
-  const heroSlides = [
-    {
-      img: 'https://placehold.co/1600x500/212529/ffffff?text=Hi-Vis+Workwear',
-      title: 'Hi-Vis Workwear Collection',
-      subtitle: 'Safety meets comfort — AS/NZS certified high visibility apparel',
-    },
-    {
-      img: 'https://placehold.co/1600x500/0d6efd/ffffff?text=Corporate+Uniforms',
-      title: 'Corporate Uniforms',
-      subtitle: 'Elevate your brand with premium embroidered corporate wear',
-    },
-    {
-      img: 'https://placehold.co/1600x500/198754/ffffff?text=Culinary+Chef+Wear',
-      title: 'Culinary & Hospitality',
-      subtitle: 'Professional chef jackets, aprons & hospitality uniforms',
-    },
+  const values = [
+    { icon: 'truck', title: 'Australia-Wide Delivery', sub: 'Fast, tracked shipping to every state.' },
+    { icon: 'shield', title: 'AS/NZS Certified', sub: 'Compliant hi-vis for job sites.' },
+    { icon: 'stitch', title: 'Embroidery & Print', sub: 'Your logo, done in-house.' },
+    { icon: 'map', title: 'Sydney Based', sub: 'Local support, real people.' },
   ];
 
-  const serviceSections = [
+  const features = [
     {
-      title: 'BOCINI NEW RANGE',
-      text: 'Discover the latest additions to the Xianlu Workwear range. From workwear and corporate apparel to sportswear and promotional clothing, explore our newest styles, colours and innovations.',
-      link: '/products',
-      bg: 'bg-[#212529]',
-      textColor: 'text-white',
+      eyebrow: 'BOCINI NEW RANGE',
+      title: 'The latest from Xianlu Workwear',
+      text: 'Discover the newest additions to our range — from durable workwear and corporate apparel to sportswear and promotional clothing. Fresh styles, colours and innovations, built for Australian teams.',
+      img: 'https://loremflickr.com/800/640/workwear,fashion?lock=44',
+      href: '/products',
+      cta: 'See more',
     },
     {
-      title: 'XIANLU RANGE',
-      text: 'Explore the Xianlu Workwear Range, featuring high-quality corporate clothing, durable workwear, and professional sportswear designed for Australian businesses and teams.',
-      link: '/products',
-      bg: 'bg-[#343a40]',
-      textColor: 'text-white',
+      eyebrow: 'INDENT SERVICE',
+      title: 'Made to your exact spec',
+      text: 'Our indent service lets you develop garments to your exact specification. We partner with trusted overseas manufacturers so your uniform is uniquely yours — colour, fit and finish.',
+      img: 'https://loremflickr.com/800/640/factory,textile?lock=55',
+      href: '/products?cat=Workwear',
+      cta: 'Read more',
     },
     {
-      title: 'INDENT SERVICE',
-      text: 'Xianlu Workwear offers indent services that enable customers to develop garments to their exact specification. We partner with trusted overseas manufacturers.',
-      link: '/products?cat=Workwear',
-      bg: 'bg-[#212529]',
-      textColor: 'text-white',
-    },
-    {
-      title: 'DYE SUBLIMATION',
-      text: 'Our dye sublimation brings clothing to life with vibrant, long-lasting designs. Perfect for sportswear, uniforms, and promotions with bold colour that never fades.',
-      link: '/products',
-      bg: 'bg-[#343a40]',
-      textColor: 'text-white',
-    },
-    {
-      title: 'DECORATING SERVICES',
-      text: 'Embroidery, screen printing, and digital transfer — from vibrant colours to detailed designs, we make your apparel stand out and last.',
-      link: '/products',
-      bg: 'bg-[#212529]',
-      textColor: 'text-white',
+      eyebrow: 'DYE SUBLIMATION',
+      title: 'Colour that never fades',
+      text: 'Dye sublimation brings clothing to life with vibrant, long-lasting designs. Perfect for sportswear, uniforms and promotions — bold colour and comfort that never cracks or peels.',
+      img: 'https://loremflickr.com/800/640/printing,fabric?lock=66',
+      href: '/products',
+      cta: 'Get started',
     },
   ];
 
   return (
-    <div className="-mx-4 sm:mx-0">
-      {/* ── Hero Carousel ──────────────────────────────────────── */}
-      <div id="heroCarousel" className="carousel-section carousel slide carousel-fade mb-5" data-bs-ride="carousel">
-        <div className="relative overflow-hidden rounded-none sm:rounded-lg" style={{ height: '340px' }}>
-          {heroSlides.map((slide, i) => (
-            <div
-              key={i}
-              className={`absolute inset-0 transition-opacity duration-700 ${i === 0 ? 'opacity-100' : 'opacity-0'}`}
-              style={{
-                backgroundImage: `url(${slide.img})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            >
-              <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-                <h1 className="text-3xl md:text-5xl font-bold text-white mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
-                  {slide.title}
-                </h1>
-                <p className="text-lg text-white/80 max-w-2xl mb-6">{slide.subtitle}</p>
-                <Link href="/products" className="btn-bocini text-base px-6 py-2.5">
-                  Shop Now
-                </Link>
+    <div>
+      {/* ── Hero ─────────────────────────────────────────────── */}
+      <HeroCarousel />
+
+      {/* ── Value props ──────────────────────────────────────── */}
+      <section className="container-x">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 -mt-10 relative z-10">
+          {values.map((v) => (
+            <div key={v.title} className="card p-5 flex items-start gap-3">
+              <span className="grid place-items-center w-10 h-10 rounded-lg bg-[var(--accent-soft)] text-[var(--accent)] shrink-0">
+                <ValueIcon name={v.icon} />
+              </span>
+              <div>
+                <div className="font-head font-semibold text-[var(--ink)] text-sm leading-tight">{v.title}</div>
+                <div className="text-xs text-[var(--muted)] mt-1 leading-snug">{v.sub}</div>
               </div>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* ── Product Grid ────────────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-4 mb-5">
-        <h2 className="section-heading text-center">Featured Products</h2>
-        <p className="section-subheading text-center max-w-2xl mx-auto">
-          Explore our curated selection of premium workwear and corporate essentials for Australian businesses.
-        </p>
-        <div className="product-grid mb-3 mt-6">
-          {products.slice(0, 8).map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
-        <div className="text-center mt-5">
-          <Link href="/products" className="btn-bocini px-6 py-2">
-            View Full Range
-          </Link>
-        </div>
-      </div>
-
-      {/* ── Category Quick Links ────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-4 mb-5">
-        <h2 className="section-heading text-center">Shop by Category</h2>
-        <p className="section-subheading text-center max-w-xl mx-auto">
-          Browse our range by industry
-        </p>
-        <div className="flex flex-wrap justify-center gap-3 mt-4">
-          {categories.map((c) => (
-            <Link
-              key={c}
-              href={`/products?cat=${c}`}
-              className="btn-bocini-outline px-5 py-2"
-            >
-              {c}
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Service Sections (Bocini-style) ──────────────────── */}
-      {serviceSections.map((sec, i) => (
-        <section
-          key={i}
-          className={`${sec.bg} ${sec.textColor} ${i % 2 === 0 ? 'section-colored' : 'section-colored'}`}
-          style={{ padding: '4rem 1.5rem' }}
-        >
-          <div className="max-w-4xl mx-auto">
-            <h2 className="section-heading text-white text-center">{sec.title}</h2>
-            <p className="text-white/80 text-center max-w-2xl mx-auto mt-3 mb-6 text-lg leading-relaxed">
-              {sec.text}
-            </p>
-            <div className="text-center">
-              <Link href={sec.link} className="btn-bocini bg-white text-[#212529] px-6 py-2.5 hover:bg-gray-100">
-                {i === 3 ? 'Get Started' : 'Read more'} &raquo;
-              </Link>
-            </div>
-          </div>
-        </section>
-      ))}
-
-      {/* ── About Us ─────────────────────────────────────────────── */}
-      <section className="bg-[#212529] text-white section-colored" style={{ padding: '4rem 1.5rem' }}>
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="section-heading text-white">ABOUT US</h2>
-          <p className="text-white/80 text-center max-w-2xl mx-auto mt-3 mb-6 text-lg leading-relaxed">
-            Xianlu Workwear is an expert corporate clothing and workwear supplier with a passion for
-            delivering quality garments to Australian businesses since 2024. Based in Sydney, we serve
-            clients across Australia with premium workwear solutions.
+      {/* ── Featured Products ────────────────────────────────── */}
+      <section className="container-x py-16">
+        <Reveal className="text-center max-w-2xl mx-auto">
+          <span className="eyebrow">Featured</span>
+          <h2 className="section-title mt-3">Popular this season</h2>
+          <p className="section-lead mx-auto mt-3 text-center">
+            A curated selection of premium workwear and corporate essentials trusted by Australian businesses.
           </p>
-          <Link href="/products" className="btn-bocini bg-white text-[#212529] px-6 py-2.5 hover:bg-gray-100">
-            Read more &raquo;
+        </Reveal>
+
+        <div className="product-grid mt-10">
+          {products.slice(0, 8).map((p, i) => (
+            <Reveal key={p.id} delay={i * 60}>
+              <ProductCard product={p} />
+            </Reveal>
+          ))}
+        </div>
+
+        <div className="text-center mt-10">
+          <Link href="/products" className="btn-primary">
+            View Full Range →
           </Link>
         </div>
       </section>
+
+      {/* ── Shop by Category ─────────────────────────────────── */}
+      <section className="bg-[var(--surface)] border-y border-[var(--border)]">
+        <div className="container-x py-14 text-center">
+          <Reveal>
+            <span className="eyebrow">Browse</span>
+            <h2 className="section-title mt-3">Shop by Category</h2>
+            <p className="section-lead mx-auto mt-3 text-center">Find the right gear for your industry.</p>
+          </Reveal>
+          <Reveal className="flex flex-wrap justify-center gap-3 mt-7">
+            {categories.map((c) => (
+              <Link key={c} href={`/products?cat=${c}`} className="btn-ghost">
+                {c}
+              </Link>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── Feature rows ─────────────────────────────────────── */}
+      <section className="container-x py-16 space-y-16">
+        {features.map((f, i) => (
+          <Reveal key={f.eyebrow}>
+            <div className={`grid md:grid-cols-2 gap-8 items-center ${i % 2 === 1 ? 'md:[&>*:first-child]:order-2' : ''}`}>
+              <div className="card overflow-hidden aspect-[4/3]">
+                <SmartImage
+                  src={f.img}
+                  seed={f.eyebrow}
+                  alt={f.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <span className="eyebrow">{f.eyebrow}</span>
+                <h3 className="section-title mt-3">{f.title}</h3>
+                <p className="section-lead mt-4">{f.text}</p>
+                <Link href={f.href} className="btn-primary mt-6">
+                  {f.cta} &raquo;
+                </Link>
+              </div>
+            </div>
+          </Reveal>
+        ))}
+      </section>
+
+      {/* ── About band ───────────────────────────────────────── */}
+      <section className="bg-[var(--surface)] border-y border-[var(--border)]">
+        <div className="container-x py-16 grid md:grid-cols-2 gap-10 items-center">
+          <Reveal>
+            <span className="eyebrow">About Us</span>
+            <h2 className="section-title mt-3">Workwear expertise since 2024</h2>
+            <p className="section-lead mt-4">
+              Xianlu Workwear is an expert corporate clothing and workwear supplier, delivering
+              quality garments to Australian businesses. Based in Sydney, we combine style,
+              comfort and practicality for every workplace.
+            </p>
+            <Link href="/products" className="btn-primary mt-6">Our story &raquo;</Link>
+          </Reveal>
+          <Reveal className="grid grid-cols-2 gap-4" delay={120}>
+            {[
+              { n: '500+', l: 'Products' },
+              { n: '8', l: 'Categories' },
+              { n: '24/7', l: 'Online ordering' },
+              { n: '100%', l: 'AU owned' },
+            ].map((s) => (
+              <div key={s.l} className="card p-6 text-center">
+                <div className="font-head font-extrabold text-3xl text-[var(--accent)]">{s.n}</div>
+                <div className="text-sm text-[var(--muted)] mt-1">{s.l}</div>
+              </div>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── CTA band ─────────────────────────────────────────── */}
+      <section className="container-x py-16">
+        <Reveal>
+          <div
+            className="rounded-[var(--radius)] px-8 py-12 text-center text-white overflow-hidden relative"
+            style={{ background: 'linear-gradient(120deg,#0a2540 0%,#0a66c2 100%)' }}
+          >
+            <h2 className="font-head font-extrabold text-3xl md:text-4xl">Need a bulk order or custom logo?</h2>
+            <p className="text-white/85 mt-3 max-w-xl mx-auto">
+              Get a tailored quote for your team. Embroidery, printing and indent service available.
+            </p>
+            <div className="flex flex-wrap gap-3 justify-center mt-7">
+              <a
+                href="mailto:info@xianlu.com.au"
+                className="btn-primary !bg-white !text-[#0a2540] hover:!bg-white/90"
+              >
+                Request a Quote
+              </a>
+              <Link href="/products" className="btn-ghost !text-white !border-white/40 hover:!bg-white/10 hover:!border-white">
+                Browse Products
+              </Link>
+            </div>
+          </div>
+        </Reveal>
+      </section>
     </div>
   );
+}
+
+function ValueIcon({ name }: { name: string }) {
+  const common = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  switch (name) {
+    case 'truck':
+      return <svg {...common}><path d="M1 3h15v13H1zM16 8h4l3 3v5h-7zM5.5 18.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17.5 18.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" /></svg>;
+    case 'shield':
+      return <svg {...common}><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5z" /><path d="M9 12l2 2 4-4" /></svg>;
+    case 'stitch':
+      return <svg {...common}><path d="M12 20h9M3 20h3M12 4v16M8 8l4-4 4 4" /></svg>;
+    case 'map':
+      return <svg {...common}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>;
+    default:
+      return null;
+  }
 }

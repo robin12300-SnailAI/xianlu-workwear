@@ -19,15 +19,18 @@ export const metadata: Metadata = {
   },
 };
 
+// Prevent theme flash: apply stored/system preference before first paint.
+const noFlash = `(function(){try{var t=localStorage.getItem('theme');var d=t? t==='dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
-        {/* Bocini uses Montserrat as primary font */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        <script dangerouslySetInnerHTML={{ __html: noFlash }} />
       </head>
       <body>
         <CartProvider>
