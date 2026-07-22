@@ -19,8 +19,8 @@ export const metadata: Metadata = {
   },
 };
 
-// Prevent theme flash: apply stored/system preference before first paint.
-const noFlash = `(function(){try{var t=localStorage.getItem('theme');var d=t? t==='dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();`;
+// Prevent theme flash: default to light; only go dark if user explicitly toggled it.
+const noFlash = `(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.classList.add('dark');}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
