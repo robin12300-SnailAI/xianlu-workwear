@@ -138,10 +138,10 @@
   {
     "id": "p7",
     "slug": "beanie-accessory",
-    "name": "Work Beanie",
+    "name": "singlet 5092",
     "category": "singlet",
     "description": "HI VIS SINGLET, FABRIC: 100% POLYESTER",
-    "price": 9.95,
+    "price": 10,
     "images": [
       "https://robin12300-snailai.github.io/xianlu-workwear/images/products/p7-1-ms4g9art.png"
     ],
@@ -152,7 +152,7 @@
       "XS-5XL"
     ],
     "inStock": true,
-    "seoTitle": "Work Beanie | Xianlu Workwear",
+    "seoTitle": "singlet | Xianlu Workwear",
     "seoDescription": "HI VIS SINGLET, FABRIC: 100% POLYESTER"
   }
 ]
