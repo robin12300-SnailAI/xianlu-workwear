@@ -2,7 +2,7 @@
   {
     "id": "p1",
     "slug": "hivis-two-tone-polo",
-    "name": "Hi-Vis Two-Tone Polo",
+    "name": "Hi-Vis Polo",
     "category": "polo",
     "description": "FABRIC: 100%POLYESTER",
     "price": 10,
@@ -14,15 +14,10 @@
       "Yellow"
     ],
     "sizes": [
-      "S",
-      "M",
-      "L",
-      "XL",
-      "2XL",
-      "3XL"
+      "XS-5XL"
     ],
     "inStock": true,
-    "seoTitle": "Hi-Vis Two-Tone Polo | Xianlu Workwear",
+    "seoTitle": "Polo | Xianlu Workwear",
     "seoDescription": "FABRIC: 100%POLYESTER"
   },
   {
@@ -47,17 +42,18 @@
       "3XL"
     ],
     "inStock": true,
-    "seoTitle": "Hi-Vis Day/Night Jacket | Xianlu Workwear",
+    "seoTitle": "jumper and Jacket | Xianlu Workwear",
     "seoDescription": "FABRIC: 100% POLYESTER"
   },
   {
     "id": "p3",
     "slug": "workwear-cargo-pants",
-    "name": "Workwear Cargo Pants",
+    "name": "Workwear Cargo Pants 1120",
     "category": "pants",
-    "description": "多口袋工装裤，耐磨面料，膝部加固，适合各类体力工作。",
-    "price": 39.95,
+    "description": "Work Pants With Reinforced Patches, FABRIC: 100% Cotton",
+    "price": 35,
     "images": [
+      "https://robin12300-snailai.github.io/xianlu-workwear/images/products/p3-1-ms4g8yu6.png",
       "https://loremflickr.com/600/600/workwear,pants?lock=73"
     ],
     "colors": [
@@ -66,51 +62,42 @@
       "Khaki"
     ],
     "sizes": [
-      "28",
-      "30",
-      "32",
-      "34",
-      "36",
-      "38"
+      "28-46"
     ],
     "inStock": true,
-    "seoTitle": "Workwear Cargo Pants | Xianlu Workwear",
-    "seoDescription": "耐磨多口袋工装裤，膝部加固，澳洲工作服首选。"
+    "seoTitle": "Pants | Xianlu Workwear",
+    "seoDescription": "Work Pants With Reinforced Patches, FABRIC: 100% Cotton"
   },
   {
     "id": "p4",
     "slug": "corporate-oxford-shirt",
-    "name": "Corporate Oxford Shirt",
+    "name": "TAPED HI VIS L/S DRILL SHIRT J0078",
     "category": "shirt",
-    "description": "商务牛津衬衫，挺括有型，可刺绣企业 Logo，适合企业制服。",
-    "price": 29.95,
+    "description": "TAPED HI VIS L/S DRILL SHIRT,FABRIC: 100%Cotton",
+    "price": 28,
     "images": [
-      "https://loremflickr.com/600/600/shirt,corporate?lock=74"
+      "https://robin12300-snailai.github.io/xianlu-workwear/images/products/p4-1-ms4g922n.png"
     ],
     "colors": [
-      "White",
-      "Light Blue",
-      "Black"
+      "Orange/Navy",
+      "Yellow/Navy"
     ],
     "sizes": [
-      "S",
-      "M",
-      "L",
-      "XL",
-      "2XL"
+      "XS-5XL"
     ],
     "inStock": true,
-    "seoTitle": "Corporate Oxford Shirt | Xianlu Workwear",
-    "seoDescription": "企业制服牛津衬衫，可加 Logo 刺绣，B2B 批量定制。"
+    "seoTitle": "Shirt | Xianlu Workwear",
+    "seoDescription": "TAPED HI VIS L/S DRILL SHIRT,FABRIC: 100%Cotton"
   },
   {
     "id": "p5",
     "slug": "chef-jacket-white",
-    "name": "Chef Jacket White",
-    "category": "jumper and jacket",
-    "description": "专业厨师服，双排扣，透气棉混纺，餐饮行业标配。",
+    "name": "Stretch Work Shorts",
+    "category": "shorts",
+    "description": "Stretch Work Shorts, FABRIC: 95% Cotton; 5% Spandex",
     "price": 34.95,
     "images": [
+      "https://robin12300-snailai.github.io/xianlu-workwear/images/products/p5-1-ms4g94m0.png",
       "https://loremflickr.com/600/600/chef,uniform?lock=75"
     ],
     "colors": [
@@ -125,51 +112,47 @@
       "2XL"
     ],
     "inStock": true,
-    "seoTitle": "Chef Jacket | Xianlu Workwear",
-    "seoDescription": "专业厨师服双排扣，餐饮制服，澳洲全境配送。"
+    "seoTitle": "shorts | xianlu workwear",
+    "seoDescription": "Stretch Work Shorts, FABRIC: 95% Cotton; 5% Spandex"
   },
   {
     "id": "p6",
     "slug": "hospitality-apron",
-    "name": "Hospitality Apron",
-    "category": "pants",
-    "description": "餐饮服务员围裙，加厚耐洗，可印 Logo，多颜色可选。",
-    "price": 19.95,
+    "name": "vest 11528",
+    "category": "vest",
+    "description": "TAPED HI VIS SAFTY VEST,FABRIC: 100% POLYESTER",
+    "price": 10,
     "images": [
-      "https://loremflickr.com/600/600/apron,restaurant?lock=76"
+      "https://robin12300-snailai.github.io/xianlu-workwear/images/products/p6-1-ms4g975v.png"
     ],
     "colors": [
-      "Black",
-      "White",
-      "Red"
+      "yellow，orange"
     ],
     "sizes": [
-      "One Size"
+      "XS-5XL"
     ],
     "inStock": true,
     "seoTitle": "Hospitality Apron | Xianlu Workwear",
-    "seoDescription": "加厚耐洗餐饮围裙，可加 Logo， hospitality 制服。"
+    "seoDescription": "TAPED HI VIS SAFTY VEST,FABRIC: 100% POLYESTER"
   },
   {
     "id": "p7",
     "slug": "beanie-accessory",
     "name": "Work Beanie",
-    "category": "shorts",
-    "description": "保暖针织帽，适合户外与冬季作业，可绣 Logo。",
+    "category": "singlet",
+    "description": "HI VIS SINGLET, FABRIC: 100% POLYESTER",
     "price": 9.95,
     "images": [
-      "https://loremflickr.com/600/600/beanie,knit?lock=77"
+      "https://robin12300-snailai.github.io/xianlu-workwear/images/products/p7-1-ms4g9art.png"
     ],
     "colors": [
-      "Black",
-      "Navy",
-      "Gray"
+      "yellow，orange"
     ],
     "sizes": [
-      "One Size"
+      "XS-5XL"
     ],
     "inStock": true,
     "seoTitle": "Work Beanie | Xianlu Workwear",
-    "seoDescription": "保暖针织工作帽，冬季户外作业配件。"
+    "seoDescription": "HI VIS SINGLET, FABRIC: 100% POLYESTER"
   }
 ]
