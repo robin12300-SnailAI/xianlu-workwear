@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useCart } from './CartProvider';
 import Search from './Search';
 import ContactModal from './ContactModal';
+import ContactInfoModal from './ContactInfoModal';
 import categoriesData from '../../data/categories.json';
 
 const RAW_CATS: string[] = categoriesData as string[];
@@ -14,6 +15,7 @@ export default function Header() {
   const { count } = useCart();
   const [scrolled, setScrolled] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
+  const [contactInfoOpen, setContactInfoOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -50,6 +52,12 @@ export default function Header() {
             className="nav-link uppercase tracking-wider text-[var(--accent)] hover:text-[var(--accent)]/80"
           >
             About Us
+          </button>
+          <button
+            onClick={() => setContactInfoOpen(true)}
+            className="nav-link uppercase tracking-wider text-[var(--accent)] hover:text-[var(--accent)]/80"
+          >
+            Contact Us
           </button>
         </nav>
 
@@ -92,10 +100,17 @@ export default function Header() {
           >
             About Us
           </button>
+          <button
+            onClick={() => setContactInfoOpen(true)}
+            className="nav-link whitespace-nowrap uppercase tracking-wider text-[var(--accent)]"
+          >
+            Contact Us
+          </button>
         </div>
       </div>
 
       <ContactModal open={contactOpen} onClose={() => setContactOpen(false)} />
+      <ContactInfoModal open={contactInfoOpen} onClose={() => setContactInfoOpen(false)} />
     </header>
   );
 }
