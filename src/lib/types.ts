@@ -13,6 +13,7 @@ export interface Product {
   colors: string[]; // 可选颜色
   sizes: string[]; // 可选尺码
   inStock: boolean; // 是否有货
+  code?: string; // 产品码（每个商品唯一，如 SKU）
   seoTitle?: string; // SEO 标题（留空则用 name）
   seoDescription?: string; // SEO 描述
 }

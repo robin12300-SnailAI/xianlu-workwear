@@ -8,7 +8,7 @@ import { publishProducts, publishCategories, getGithubToken, saveGithubToken, AC
 export default function AdminPanel() {
   const [products, setProducts] = useState<Product[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<Partial<Product>>({ name: '', category: 'HiVis', description: '', price: 0, images: [], colors: [], sizes: [], inStock: true });
+  const [form, setForm] = useState<Partial<Product>>({ name: '', category: 'HiVis', description: '', price: 0, images: [], colors: [], sizes: [], inStock: true, code: '' });
   const fileRef = useRef<HTMLInputElement>(null);
 
   // 发布相关状态
@@ -59,9 +59,17 @@ export default function AdminPanel() {
   }
 
   function save() {
-    const { name, category, description, price, images, colors, sizes, inStock, seoTitle, seoDescription } = form;
+    const { name, category, description, price, images, colors, sizes, inStock, code, seoTitle, seoDescription } = form;
     if (!name || !price) return alert('请填写产品名称和价格');
-    const payload: Partial<Product> = { name, category, description, price, images, colors, sizes, inStock, seoTitle, seoDescription };
+    const trimmedCode = (code || '').trim();
+    // 产品码唯一性校验（每个商品应有不同 code）
+    if (trimmedCode) {
+      const conflict = getMergedProducts().some(
+        (p) => p.id !== editingId && (p.code || '').trim().toLowerCase() === trimmedCode.toLowerCase(),
+      );
+      if (conflict) return alert(`产品码「${trimmedCode}」已存在于其它产品，请使用不同的码`);
+    }
+    const payload: Partial<Product> = { name, category, description, price, images, colors, sizes, inStock, code: trimmedCode, seoTitle, seoDescription };
     if (editingId) {
       updateLocalProduct(editingId, payload);
     } else {
@@ -83,7 +91,7 @@ export default function AdminPanel() {
   }
 
   function resetForm() {
-    setForm({ name: '', category: categories[0] || 'HiVis', description: '', price: 0, images: [], colors: [], sizes: [], inStock: true });
+    setForm({ name: '', category: categories[0] || 'HiVis', description: '', price: 0, images: [], colors: [], sizes: [], inStock: true, code: '' });
   }
 
   // ===== 分类 CRUD =====
@@ -299,6 +307,7 @@ export default function AdminPanel() {
           {categories.map((c) => <option key={c}>{c}</option>)}
         </select>
         <input placeholder="价格 AUD" type="number" step="0.01" value={form.price || 0} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} className="border rounded px-2 py-1 text-sm" />
+        <input placeholder="产品码（每个商品唯一，如 SKU-001）" value={form.code || ''} onChange={(e) => setForm({ ...form, code: e.target.value })} className="border rounded px-2 py-1 text-sm" />
 
         {/* 图片上传 */}
         <div className="md:col-span-2 space-y-2">
@@ -348,7 +357,7 @@ export default function AdminPanel() {
             )}
             <div className="flex-1 min-w-0">
               <div className="font-medium truncate text-sm">{p.name}</div>
-              <div className="text-xs text-gray-400">{p.category} · ${p.price.toFixed(2)}</div>
+              <div className="text-xs text-gray-400">{p.category} · ${p.price.toFixed(2)}{p.code ? ` · 码:${p.code}` : ''}</div>
             </div>
             <button onClick={() => edit(p)} className="text-brand text-xs whitespace-nowrap">编辑</button>
             <button onClick={() => del(p.id)} className="text-red-500 text-xs whitespace-nowrap">删除</button>

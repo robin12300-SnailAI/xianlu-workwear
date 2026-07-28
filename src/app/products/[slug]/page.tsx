@@ -44,7 +44,7 @@ export default async function ProductDetail({
 
       <div>
         <div className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
-          {product.category}
+          {product.category}{product.code ? ` · Code: ${product.code}` : ''}
         </div>
         <h1 className="font-head font-bold text-3xl mt-1.5 text-[var(--ink)]">{product.name}</h1>
         <div className="text-3xl font-bold text-[var(--accent)] mt-3">${product.price.toFixed(2)}</div>
