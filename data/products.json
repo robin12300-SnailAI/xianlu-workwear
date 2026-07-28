@@ -2,7 +2,7 @@
   {
     "id": "p1",
     "slug": "hivis-two-tone-polo",
-    "name": "Hi-Vis Polo",
+    "name": "Hi-Vis Polo 1310",
     "category": "polo",
     "description": "FABRIC: 100%POLYESTER",
     "price": 10,
@@ -23,7 +23,7 @@
   {
     "id": "p2",
     "slug": "hivis-class-dn-jacket",
-    "name": "Hi-Vis Jacket",
+    "name": "Hi-Vis Jacket JOO82",
     "category": "jumper and jacket",
     "description": "FABRIC: 100% POLYESTER",
     "price": 25,
@@ -154,5 +154,25 @@
     "inStock": true,
     "seoTitle": "singlet | Xianlu Workwear",
     "seoDescription": "HI VIS SINGLET, FABRIC: 100% POLYESTER"
+  },
+  {
+    "name": "HI VIS L/S POLO SHIRT 1312",
+    "category": "HiVis",
+    "description": "HI VIS L/S POLO SHIRT, FABRIC: 100%POLYESTER",
+    "price": 15,
+    "images": [
+      "https://robin12300-snailai.github.io/xianlu-workwear/images/products/pms4i3vcx-1-ms4i7o8y.png"
+    ],
+    "colors": [
+      "yellow/navy，orange/navy"
+    ],
+    "sizes": [
+      "XS-5XL"
+    ],
+    "inStock": true,
+    "seoTitle": "polo | xianlu workwear",
+    "seoDescription": "HI VIS L/S POLO SHIRT, FABRIC: 100%POLYESTER",
+    "id": "pms4i3vcx",
+    "slug": "hi-vis-l-s-polo-shirt-1312-3vcx"
   }
 ]
