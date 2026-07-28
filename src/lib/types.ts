@@ -1,11 +1,6 @@
 // 产品类型定义。新增字段时在这里加，后台表单也要同步加。
-export type Category =
-  | 'HiVis'
-  | 'Workwear'
-  | 'Corporate'
-  | 'Chef'
-  | 'Hospitality'
-  | 'Accessories';
+// Category 现在由 data/categories.json 管理，不再是写死的联合类型。
+export type Category = string;
 
 export interface Product {
   id: string;

@@ -2,12 +2,8 @@
 
 import { useEffect, useState, useRef } from 'react';
 import type { Product, Category } from '@/lib/types';
-import { getMergedProducts, addLocalProduct, updateLocalProduct, deleteLocalProduct, saveLocalProducts } from '@/lib/localProducts';
-import { publishProducts, getGithubToken, saveGithubToken, ACTIONS_URL } from '@/lib/githubSync';
-
-const CATS: Category[] = [
-  'HiVis', 'Workwear', 'Corporate', 'Chef', 'Hospitality', 'Accessories',
-];
+import { getMergedProducts, addLocalProduct, updateLocalProduct, deleteLocalProduct, saveLocalProducts, getMergedCategories, saveLocalCategories } from '@/lib/localProducts';
+import { publishProducts, publishCategories, getGithubToken, saveGithubToken, ACTIONS_URL } from '@/lib/githubSync';
 
 export default function AdminPanel() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -23,8 +19,16 @@ export default function AdminPanel() {
   const [pubErr, setPubErr] = useState('');
   const [dirty, setDirty] = useState(false);
 
+  // 分类管理状态
+  const [categories, setCategories] = useState<string[]>([]);
+  const [newCat, setNewCat] = useState('');
+  const [editingCatIdx, setEditingCatIdx] = useState<number | null>(null);
+  const [editingCatValue, setEditingCatValue] = useState('');
+  const [catDirty, setCatDirty] = useState(false);
+
   function load() {
     setProducts(getMergedProducts());
+    setCategories(getMergedCategories());
   }
   useEffect(() => {
     load();
@@ -78,7 +82,62 @@ export default function AdminPanel() {
   }
 
   function resetForm() {
-    setForm({ name: '', category: 'HiVis', description: '', price: 0, images: [], colors: [], sizes: [], inStock: true });
+    setForm({ name: '', category: categories[0] || 'HiVis', description: '', price: 0, images: [], colors: [], sizes: [], inStock: true });
+  }
+
+  // ===== 分类 CRUD =====
+  function addCategory() {
+    const name = newCat.trim();
+    if (!name) return alert('请输入分类名称');
+    if (categories.includes(name)) return alert('该分类已存在');
+    const next = [...categories, name];
+    setCategories(next);
+    saveLocalCategories(next);
+    setNewCat('');
+    setCatDirty(true);
+  }
+
+  function startEditCategory(idx: number) {
+    setEditingCatIdx(idx);
+    setEditingCatValue(categories[idx]);
+  }
+
+  function saveEditCategory() {
+    if (editingCatIdx === null) return;
+    const oldName = categories[editingCatIdx];
+    const newName = editingCatValue.trim();
+    if (!newName) return alert('分类名称不能为空');
+    if (newName !== oldName && categories.includes(newName)) return alert('该分类名称已存在');
+
+    const next = categories.map((c, i) => (i === editingCatIdx ? newName : c));
+    setCategories(next);
+    saveLocalCategories(next);
+
+    // 同步更新所有产品的分类字段
+    const updated = getMergedProducts().map((p) =>
+      p.category === oldName ? { ...p, category: newName } : p,
+    );
+    saveLocalProducts(updated);
+    setProducts(updated);
+
+    setEditingCatIdx(null);
+    setEditingCatValue('');
+    setCatDirty(true);
+  }
+
+  function deleteCategory(idx: number) {
+    const name = categories[idx];
+    const used = getMergedProducts().filter((p) => p.category === name).length;
+    if (used > 0) {
+      return alert(`「${name}」分类下还有 ${used} 个产品，请先修改这些产品到其它分类后再删除。`);
+    }
+    if (!confirm(`确定删除分类「${name}」吗？`)) return;
+    const next = categories.filter((_, i) => i !== idx);
+    setCategories(next);
+    saveLocalCategories(next);
+    setEditingCatIdx(null);
+    setEditingCatValue('');
+    setCatDirty(true);
   }
 
   function saveToken() {
@@ -109,12 +168,14 @@ export default function AdminPanel() {
       setPubErr('请先展开下方「发布设置」，粘贴并保存 GitHub Token');
       return;
     }
-    if (!confirm('确定把当前产品数据发布到线上网站吗？\n提交后约 2-3 分钟自动生效。')) return;
+    if (!confirm('确定把当前产品和分类数据发布到线上网站吗？\n提交后约 2-3 分钟自动生效。')) return;
     setPublishing(true);
     try {
       const cleaned = await publishProducts(getMergedProducts(), (m) => setPubMsg(m));
       saveLocalProducts(cleaned);
+      await publishCategories(categories, (m) => setPubMsg(m));
       setDirty(false);
+      setCatDirty(false);
       setPubMsg('✅ 已提交到 GitHub！网站正在自动重建，约 2-3 分钟后刷新前台即可看到更新。');
       load();
     } catch (e) {
@@ -146,7 +207,7 @@ export default function AdminPanel() {
             disabled={publishing}
             className="px-4 py-2 rounded-lg bg-green-600 text-white font-semibold text-sm hover:bg-green-700 transition disabled:opacity-50 whitespace-nowrap"
           >
-            {publishing ? '发布中…' : dirty ? '🚀 发布（有未发布改动）' : '🚀 发布到线上'}
+            {publishing ? '发布中…' : (dirty || catDirty) ? '🚀 发布（有未发布改动）' : '🚀 发布到线上'}
           </button>
         </div>
         {pubMsg && <div className="text-xs text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">{pubMsg}</div>}
@@ -179,11 +240,62 @@ export default function AdminPanel() {
         </details>
       </div>
 
+      {/* 分类管理 */}
+      <div className="bg-white border rounded-xl p-4 space-y-3 shadow-sm">
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-sm">分类管理</h2>
+          <span className="text-xs text-gray-400">增删改后同样需要点「发布到线上」才会生效</span>
+        </div>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="新分类名称"
+            value={newCat}
+            onChange={(e) => setNewCat(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && addCategory()}
+            className="border rounded px-2 py-1 text-xs flex-1"
+          />
+          <button onClick={addCategory} className="border px-3 py-1 rounded text-xs hover:bg-gray-50">新增</button>
+        </div>
+        <div className="divide-y border rounded">
+          {categories.map((c, idx) => (
+            <div key={c} className="flex items-center justify-between px-3 py-2">
+              {editingCatIdx === idx ? (
+                <>
+                  <input
+                    type="text"
+                    value={editingCatValue}
+                    onChange={(e) => setEditingCatValue(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && saveEditCategory()}
+                    className="border rounded px-2 py-1 text-xs flex-1"
+                  />
+                  <div className="flex gap-2 ml-2">
+                    <button onClick={saveEditCategory} className="text-green-600 text-xs">保存</button>
+                    <button onClick={() => { setEditingCatIdx(null); setEditingCatValue(''); }} className="text-gray-400 text-xs">取消</button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <span className="text-sm">{c}</span>
+                  <div className="flex gap-3">
+                    <button onClick={() => startEditCategory(idx)} className="text-brand text-xs">编辑</button>
+                    <button onClick={() => deleteCategory(idx)} className="text-red-500 text-xs">删除</button>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+          {categories.length === 0 && (
+            <div className="p-4 text-center text-gray-400 text-xs">暂无分类</div>
+          )}
+        </div>
+      </div>
+
       {/* 编辑/新增 表单 */}
       <div className="bg-white border rounded-xl p-4 grid md:grid-cols-2 gap-3 shadow-sm">
         <input placeholder="产品名" value={form.name || ''} onChange={(e) => setForm({ ...form, name: e.target.value })} className="border rounded px-2 py-1 text-sm" />
         <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value as Category })} className="border rounded px-2 py-1 text-sm">
-          {CATS.map((c) => <option key={c}>{c}</option>)}
+          {categories.map((c) => <option key={c}>{c}</option>)}
         </select>
         <input placeholder="价格 AUD" type="number" step="0.01" value={form.price || 0} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} className="border rounded px-2 py-1 text-sm" />
 

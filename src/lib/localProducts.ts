@@ -1,6 +1,31 @@
 import type { Product } from './types';
+import defaultCategories from '../../data/categories.json';
 
 const STORAGE_KEY = 'xianlu_products';
+const CATEGORY_KEY = 'xianlu_categories';
+
+// ===== 分类管理 =====
+export function getLocalCategories(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(CATEGORY_KEY);
+    if (raw) return JSON.parse(raw) as string[];
+  } catch {}
+  return [];
+}
+
+export function saveLocalCategories(categories: string[]): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(CATEGORY_KEY, JSON.stringify(categories));
+}
+
+export function getMergedCategories(): string[] {
+  if (typeof window === 'undefined') return defaultCategories as string[];
+  const local = getLocalCategories();
+  if (local.length > 0) return local;
+  saveLocalCategories(defaultCategories as string[]);
+  return defaultCategories as string[];
+}
 
 // 从 localStorage 读取产品；若没有则返回默认数据（从 products.json 导入）
 export function getLocalProducts(): Product[] {

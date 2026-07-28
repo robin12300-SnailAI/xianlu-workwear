@@ -1,6 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import categoriesData from '../../data/categories.json';
+
+const CATS: string[] = categoriesData as string[];
 
 export default function Footer() {
   return (
@@ -32,10 +35,9 @@ export default function Footer() {
           </h5>
           <div className="space-y-2.5">
             <Link href="/products" className="footer-link block">All Products</Link>
-            <Link href="/products?cat=HiVis" className="footer-link block">Hi-Vis</Link>
-            <Link href="/products?cat=Workwear" className="footer-link block">Workwear</Link>
-            <Link href="/products?cat=Corporate" className="footer-link block">Corporate</Link>
-            <Link href="/products?cat=Chef" className="footer-link block">Chef &amp; Hospitality</Link>
+            {CATS.map((c) => (
+              <Link key={c} href={`/products?cat=${c}`} className="footer-link block">{c}</Link>
+            ))}
           </div>
         </div>
 

@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useCart } from './CartProvider';
 import ThemeToggle from './ThemeToggle';
+import categoriesData from '../../data/categories.json';
 
-const CATS = ['HiVis', 'Workwear', 'Corporate', 'Chef', 'Hospitality', 'Accessories'];
+const CATS: string[] = categoriesData as string[];
 
 export default function Header() {
   const { count } = useCart();

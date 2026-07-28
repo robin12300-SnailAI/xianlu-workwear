@@ -105,6 +105,24 @@ function utf8ToBase64(str: string): string {
   return btoa(bin);
 }
 
+// ===== 发布：把当前分类数据写回仓库 =====
+export async function publishCategories(
+  categories: string[],
+  onProgress?: (msg: string) => void,
+): Promise<string[]> {
+  if (!getGithubToken()) {
+    throw new Error('尚未设置 GitHub Token，请先在「发布设置」里粘贴并保存 Token');
+  }
+  onProgress?.('正在提交分类数据 categories.json ...');
+  const json = JSON.stringify(categories, null, 2) + '\n';
+  await putFile(
+    'data/categories.json',
+    utf8ToBase64(json),
+    `chore(admin): 后台更新分类（共 ${categories.length} 个）`,
+  );
+  return categories;
+}
+
 // ===== 发布：把当前产品数据写回仓库 =====
 // 1) 把 base64 图片上传到 public/images/products/，替换成线上 URL
 // 2) 把整份产品数据提交到 data/products.json
