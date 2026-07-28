@@ -3,7 +3,7 @@
     "id": "p1",
     "slug": "hivis-two-tone-polo",
     "name": "Hi-Vis Two-Tone Polo",
-    "category": "HiVis",
+    "category": "polo",
     "description": "FABRIC: 100%POLYESTER",
     "price": 10,
     "images": [
@@ -29,7 +29,7 @@
     "id": "p2",
     "slug": "hivis-class-dn-jacket",
     "name": "Hi-Vis Jacket",
-    "category": "HiVis",
+    "category": "polo",
     "description": "FABRIC: 100% POLYESTER",
     "price": 25,
     "images": [
@@ -54,7 +54,7 @@
     "id": "p3",
     "slug": "workwear-cargo-pants",
     "name": "Workwear Cargo Pants",
-    "category": "Workwear",
+    "category": "singlet",
     "description": "多口袋工装裤，耐磨面料，膝部加固，适合各类体力工作。",
     "price": 39.95,
     "images": [
@@ -81,7 +81,7 @@
     "id": "p4",
     "slug": "corporate-oxford-shirt",
     "name": "Corporate Oxford Shirt",
-    "category": "Corporate",
+    "category": "shirt",
     "description": "商务牛津衬衫，挺括有型，可刺绣企业 Logo，适合企业制服。",
     "price": 29.95,
     "images": [
@@ -107,7 +107,7 @@
     "id": "p5",
     "slug": "chef-jacket-white",
     "name": "Chef Jacket White",
-    "category": "Chef",
+    "category": "jumper and jacket",
     "description": "专业厨师服，双排扣，透气棉混纺，餐饮行业标配。",
     "price": 34.95,
     "images": [
@@ -132,7 +132,7 @@
     "id": "p6",
     "slug": "hospitality-apron",
     "name": "Hospitality Apron",
-    "category": "Hospitality",
+    "category": "pants",
     "description": "餐饮服务员围裙，加厚耐洗，可印 Logo，多颜色可选。",
     "price": 19.95,
     "images": [
@@ -154,7 +154,7 @@
     "id": "p7",
     "slug": "beanie-accessory",
     "name": "Work Beanie",
-    "category": "Accessories",
+    "category": "shorts",
     "description": "保暖针织帽，适合户外与冬季作业，可绣 Logo。",
     "price": 9.95,
     "images": [
