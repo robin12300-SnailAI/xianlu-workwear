@@ -92,10 +92,10 @@
   {
     "id": "p5",
     "slug": "chef-jacket-white",
-    "name": "Stretch Work Shorts",
+    "name": "Stretch Work Shorts 1805",
     "category": "shorts",
     "description": "Stretch Work Shorts, FABRIC: 95% Cotton; 5% Spandex",
-    "price": 34.95,
+    "price": 28,
     "images": [
       "https://robin12300-snailai.github.io/xianlu-workwear/images/products/p5-1-ms4g94m0.png",
       "https://loremflickr.com/600/600/chef,uniform?lock=75"
@@ -105,11 +105,7 @@
       "Black"
     ],
     "sizes": [
-      "S",
-      "M",
-      "L",
-      "XL",
-      "2XL"
+      "28-46"
     ],
     "inStock": true,
     "seoTitle": "shorts | xianlu workwear",
