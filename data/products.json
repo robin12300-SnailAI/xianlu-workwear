@@ -18,7 +18,8 @@
     ],
     "inStock": true,
     "seoTitle": "Polo | Xianlu Workwear",
-    "seoDescription": "FABRIC: 100%POLYESTER"
+    "seoDescription": "FABRIC: 100%POLYESTER",
+    "code": "1310"
   },
   {
     "id": "p2",
@@ -43,7 +44,8 @@
     ],
     "inStock": true,
     "seoTitle": "jumper and Jacket | Xianlu Workwear",
-    "seoDescription": "FABRIC: 100% POLYESTER"
+    "seoDescription": "FABRIC: 100% POLYESTER",
+    "code": "J0082"
   },
   {
     "id": "p3",
@@ -66,7 +68,8 @@
     ],
     "inStock": true,
     "seoTitle": "Pants | Xianlu Workwear",
-    "seoDescription": "Work Pants With Reinforced Patches, FABRIC: 100% Cotton"
+    "seoDescription": "Work Pants With Reinforced Patches, FABRIC: 100% Cotton",
+    "code": "1120"
   },
   {
     "id": "p4",
@@ -87,7 +90,8 @@
     ],
     "inStock": true,
     "seoTitle": "Shirt | Xianlu Workwear",
-    "seoDescription": "TAPED HI VIS L/S DRILL SHIRT,FABRIC: 100%Cotton"
+    "seoDescription": "TAPED HI VIS L/S DRILL SHIRT,FABRIC: 100%Cotton",
+    "code": "J0078"
   },
   {
     "id": "p5",
@@ -109,7 +113,8 @@
     ],
     "inStock": true,
     "seoTitle": "shorts | xianlu workwear",
-    "seoDescription": "Stretch Work Shorts, FABRIC: 95% Cotton; 5% Spandex"
+    "seoDescription": "Stretch Work Shorts, FABRIC: 95% Cotton; 5% Spandex",
+    "code": "1805"
   },
   {
     "id": "p6",
@@ -129,7 +134,8 @@
     ],
     "inStock": true,
     "seoTitle": "Hospitality Apron | Xianlu Workwear",
-    "seoDescription": "TAPED HI VIS SAFTY VEST,FABRIC: 100% POLYESTER"
+    "seoDescription": "TAPED HI VIS SAFTY VEST,FABRIC: 100% POLYESTER",
+    "code": "11528"
   },
   {
     "id": "p7",
@@ -149,7 +155,8 @@
     ],
     "inStock": true,
     "seoTitle": "singlet | Xianlu Workwear",
-    "seoDescription": "HI VIS SINGLET, FABRIC: 100% POLYESTER"
+    "seoDescription": "HI VIS SINGLET, FABRIC: 100% POLYESTER",
+    "code": "5092"
   },
   {
     "name": "HI VIS L/S POLO SHIRT 1312",
@@ -169,6 +176,7 @@
     "seoTitle": "polo | xianlu workwear",
     "seoDescription": "HI VIS L/S POLO SHIRT, FABRIC: 100%POLYESTER",
     "id": "pms4i3vcx",
-    "slug": "hi-vis-l-s-polo-shirt-1312-3vcx"
+    "slug": "hi-vis-l-s-polo-shirt-1312-3vcx",
+    "code": "1312"
   }
 ]
