@@ -29,7 +29,7 @@
     "id": "p2",
     "slug": "hivis-class-dn-jacket",
     "name": "Hi-Vis Jacket",
-    "category": "polo",
+    "category": "jumper and jacket",
     "description": "FABRIC: 100% POLYESTER",
     "price": 25,
     "images": [
@@ -54,7 +54,7 @@
     "id": "p3",
     "slug": "workwear-cargo-pants",
     "name": "Workwear Cargo Pants",
-    "category": "singlet",
+    "category": "pants",
     "description": "多口袋工装裤，耐磨面料，膝部加固，适合各类体力工作。",
     "price": 39.95,
     "images": [
