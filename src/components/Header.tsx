@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useCart } from './CartProvider';
-import ThemeToggle from './ThemeToggle';
+import Search from './Search';
 import categoriesData from '../../data/categories.json';
 
 const CATS: string[] = categoriesData as string[];
@@ -46,7 +46,7 @@ export default function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <ThemeToggle />
+          <Search />
           <Link
             href="/cart"
             className="relative inline-flex items-center gap-1.5 bg-[var(--accent)] text-[var(--accent-ink)] text-sm font-semibold px-3.5 py-2 rounded-lg hover:brightness-105 transition shadow-sm"

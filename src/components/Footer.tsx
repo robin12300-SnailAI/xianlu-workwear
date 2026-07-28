@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import ThemeToggle from './ThemeToggle';
 import categoriesData from '../../data/categories.json';
 
 const CATS: string[] = categoriesData as string[];
@@ -80,9 +81,12 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-[var(--border)]">
-        <div className="container-x py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[var(--muted)]">
+        <div className="container-x py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[var(--muted)]">
           <span>&copy; {new Date().getFullYear()} Xianlu Workwear. All rights reserved.</span>
-          <span>Paddy&apos;s Market, Sydney NSW · Australia-wide delivery</span>
+          <div className="flex items-center gap-3">
+            <span>Paddy&apos;s Market, Sydney NSW · Australia-wide delivery</span>
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </footer>
