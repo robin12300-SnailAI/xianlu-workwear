@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import ThemeToggle from './ThemeToggle';
 import ContactModal from './ContactModal';
+import ContactInfoModal from './ContactInfoModal';
 import categoriesData from '../../data/categories.json';
 
 const RAW_CATS: string[] = categoriesData as string[];
@@ -11,6 +12,7 @@ const CATS = RAW_CATS.filter((c) => c.toLowerCase() !== 'contact us');
 
 export default function Footer() {
   const [contactOpen, setContactOpen] = useState(false);
+  const [contactInfoOpen, setContactInfoOpen] = useState(false);
   return (
     <footer className="mt-20 bg-[var(--surface)] border-t border-[var(--border)]">
       <div className="container-x py-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -62,6 +64,12 @@ export default function Footer() {
             >
               About Us
             </button>
+            <button
+              onClick={() => setContactInfoOpen(true)}
+              className="footer-link block text-left"
+            >
+              Contact Us
+            </button>
           </div>
         </div>
 
@@ -100,6 +108,7 @@ export default function Footer() {
       </div>
 
       <ContactModal open={contactOpen} onClose={() => setContactOpen(false)} />
+      <ContactInfoModal open={contactInfoOpen} onClose={() => setContactInfoOpen(false)} />
     </footer>
   );
 }
