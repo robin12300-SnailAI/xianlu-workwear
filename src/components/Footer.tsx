@@ -1,12 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import ThemeToggle from './ThemeToggle';
+import ContactModal from './ContactModal';
 import categoriesData from '../../data/categories.json';
 
-const CATS: string[] = categoriesData as string[];
+const RAW_CATS: string[] = categoriesData as string[];
+const CATS = RAW_CATS.filter((c) => c.toLowerCase() !== 'contact us');
 
 export default function Footer() {
+  const [contactOpen, setContactOpen] = useState(false);
   return (
     <footer className="mt-20 bg-[var(--surface)] border-t border-[var(--border)]">
       <div className="container-x py-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -52,7 +56,12 @@ export default function Footer() {
             <Link href="/products" className="footer-link block">Screen Printing</Link>
             <Link href="/products" className="footer-link block">Dye Sublimation</Link>
             <Link href="/products?cat=Workwear" className="footer-link block">Indent Service</Link>
-            <a href="mailto:info@xianlu.com.au" className="footer-link block">Contact Us</a>
+            <button
+              onClick={() => setContactOpen(true)}
+              className="footer-link block text-left"
+            >
+              Contact Us
+            </button>
           </div>
         </div>
 
@@ -89,6 +98,8 @@ export default function Footer() {
           </div>
         </div>
       </div>
+
+      <ContactModal open={contactOpen} onClose={() => setContactOpen(false)} />
     </footer>
   );
 }

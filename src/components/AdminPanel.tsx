@@ -28,7 +28,8 @@ export default function AdminPanel() {
 
   function load() {
     setProducts(getMergedProducts());
-    setCategories(getMergedCategories());
+    // Contact Us 不是产品分类，而是从 Header/Footer 弹出的关于我们弹窗
+    setCategories(getMergedCategories().filter((c) => c.toLowerCase() !== 'contact us'));
   }
   useEffect(() => {
     load();

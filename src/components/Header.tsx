@@ -4,13 +4,16 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useCart } from './CartProvider';
 import Search from './Search';
+import ContactModal from './ContactModal';
 import categoriesData from '../../data/categories.json';
 
-const CATS: string[] = categoriesData as string[];
+const RAW_CATS: string[] = categoriesData as string[];
+const CATS = RAW_CATS.filter((c) => c.toLowerCase() !== 'contact us');
 
 export default function Header() {
   const { count } = useCart();
   const [scrolled, setScrolled] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -42,6 +45,12 @@ export default function Header() {
               {c}
             </Link>
           ))}
+          <button
+            onClick={() => setContactOpen(true)}
+            className="nav-link uppercase tracking-wider text-[var(--accent)] hover:text-[var(--accent)]/80"
+          >
+            Contact Us
+          </button>
         </nav>
 
         {/* Actions */}
@@ -77,8 +86,16 @@ export default function Header() {
               {c}
             </Link>
           ))}
+          <button
+            onClick={() => setContactOpen(true)}
+            className="nav-link whitespace-nowrap uppercase tracking-wider text-[var(--accent)]"
+          >
+            Contact Us
+          </button>
         </div>
       </div>
+
+      <ContactModal open={contactOpen} onClose={() => setContactOpen(false)} />
     </header>
   );
 }
