@@ -82,11 +82,24 @@ export default function AdminPanel() {
   }
 
   function saveToken() {
-    saveGithubToken(tokenInput);
-    setHasToken(!!tokenInput.trim());
+    try {
+      saveGithubToken(tokenInput);
+      setHasToken(!!tokenInput.trim());
+      setTokenInput('');
+      setPubErr('');
+      alert(tokenInput.trim() ? 'Token 已保存在本机浏览器（不会上传）' : 'Token 已清除');
+    } catch (e) {
+      setPubErr(e instanceof Error ? e.message : String(e));
+      setPubMsg('');
+    }
+  }
+
+  function clearToken() {
+    if (!confirm('确定清空本机保存的 GitHub Token 吗？')) return;
+    saveGithubToken('');
+    setHasToken(false);
     setTokenInput('');
     setPubErr('');
-    alert(tokenInput.trim() ? 'Token 已保存在本机浏览器（不会上传）' : 'Token 已清除');
   }
 
   async function publish() {
@@ -155,6 +168,9 @@ export default function AdminPanel() {
                 className="border rounded px-2 py-1 text-xs flex-1"
               />
               <button onClick={saveToken} className="border px-3 py-1 rounded text-xs hover:bg-gray-50">保存</button>
+              {hasToken && (
+                <button onClick={clearToken} className="border px-3 py-1 rounded text-xs hover:bg-red-50 text-red-600">清除</button>
+              )}
             </div>
             <p>
               发布后可到 <a href={ACTIONS_URL} target="_blank" rel="noreferrer" className="text-brand underline">GitHub Actions</a> 查看构建进度，绿色 ✓ 即已上线。

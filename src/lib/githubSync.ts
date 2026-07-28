@@ -8,18 +8,36 @@ const TOKEN_KEY = 'xianlu_gh_token';
 const PAGES_BASE = 'https://robin12300-snailai.github.io/xianlu-workwear';
 
 // ===== Token 管理（只存在当前浏览器，不会上传） =====
+// GitHub Token（classic 或 fine-grained）都应为纯 ASCII，混入中文/特殊符号会导致 fetch 报
+// "String contains non ISO-8859-1 code point"
+function hasNonAscii(s: string): boolean {
+  return /[^\x00-\x7F]/.test(s);
+}
+
 export function getGithubToken(): string {
   if (typeof window === 'undefined') return '';
   try {
-    return localStorage.getItem(TOKEN_KEY) || '';
+    return (localStorage.getItem(TOKEN_KEY) || '').trim();
   } catch {
     return '';
   }
 }
 
+export function validateToken(token: string): string {
+  const t = token.trim();
+  if (!t) return '';
+  if (hasNonAscii(t)) {
+    throw new Error(
+      'Token 包含非 ASCII 字符（可能是复制时带上了中文、特殊空格，或把 Token 名称当成 Token 值）。请只复制 Token 值本身（以 ghp_ 或 github_pat_ 开头的长字符串）。',
+    );
+  }
+  // 去掉常见前后导不可见字符（零宽空格、不间断空格等）
+  return t.replace(/^[\s\u200B\u200C\u200D\uFEFF\u00A0]+|[\s\u200B\u200C\u200D\uFEFF\u00A0]+$/g, '');
+}
+
 export function saveGithubToken(token: string): void {
   if (typeof window === 'undefined') return;
-  const t = token.trim();
+  const t = validateToken(token);
   if (t) localStorage.setItem(TOKEN_KEY, t);
   else localStorage.removeItem(TOKEN_KEY);
 }
@@ -27,10 +45,19 @@ export function saveGithubToken(token: string): void {
 // ===== GitHub API 基础封装 =====
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function ghFetch(path: string, init?: RequestInit): Promise<any> {
+  const token = getGithubToken();
+  if (!token) {
+    throw new Error('尚未设置 GitHub Token，请先展开「发布设置」粘贴并保存 Token');
+  }
+  if (hasNonAscii(token)) {
+    throw new Error(
+      '已保存的 GitHub Token 含有非 ASCII 字符，无法发送请求。请在「发布设置」里清空后重新粘贴正确的 Token 值（以 ghp_ 或 github_pat_ 开头的长字符串）。',
+    );
+  }
   const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/${path}`, {
     ...init,
     headers: {
-      Authorization: `Bearer ${getGithubToken()}`,
+      Authorization: `Bearer ${token}`,
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
       ...(init && init.headers ? init.headers : {}),
