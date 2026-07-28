@@ -60,7 +60,7 @@ export default function Footer() {
               onClick={() => setContactOpen(true)}
               className="footer-link block text-left"
             >
-              Contact Us
+              About Us
             </button>
           </div>
         </div>

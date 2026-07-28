@@ -49,7 +49,7 @@ export default function Header() {
             onClick={() => setContactOpen(true)}
             className="nav-link uppercase tracking-wider text-[var(--accent)] hover:text-[var(--accent)]/80"
           >
-            Contact Us
+            About Us
           </button>
         </nav>
 
@@ -90,7 +90,7 @@ export default function Header() {
             onClick={() => setContactOpen(true)}
             className="nav-link whitespace-nowrap uppercase tracking-wider text-[var(--accent)]"
           >
-            Contact Us
+            About Us
           </button>
         </div>
       </div>
