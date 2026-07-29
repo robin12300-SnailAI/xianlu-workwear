@@ -15,7 +15,7 @@ type Slide = {
 
 const SLIDES: Slide[] = [
   {
-    img: 'https://loremflickr.com/1600/720/workwear,uniform?lock=11',
+    img: '/images/hero-hivis-workwear.png',
     eyebrow: 'Hi-Vis Collection',
     title: 'Safety Meets Comfort',
     subtitle: 'AS/NZS-certified high-visibility workwear built for Australian job sites.',
@@ -24,16 +24,16 @@ const SLIDES: Slide[] = [
     gradient: 'linear-gradient(120deg,#0a2540 0%,#0a66c2 100%)',
   },
   {
-    img: 'https://loremflickr.com/1600/720/corporate,shirt,uniform?lock=22',
+    img: '/images/hero-corporate-uniforms.png',
     eyebrow: 'Corporate Uniforms',
     title: 'Elevate Your Brand',
     subtitle: 'Premium embroidered corporate wear that looks sharp and lasts.',
     cta: 'Shop Corporate',
     href: '/products?cat=Corporate',
-    gradient: 'linear-gradient(120deg,#10131a 0%,#2b3a55 100%)',
+    gradient: 'linear-gradient(120deg,#0f172a 0%,#1e3a5f 100%)',
   },
   {
-    img: 'https://loremflickr.com/1600/720/chef,kitchen,uniform?lock=33',
+    img: '/images/hero-chef-hospitality.png',
     eyebrow: 'Chef & Hospitality',
     title: 'Built for the Floor',
     subtitle: 'Professional chef jackets, aprons & hospitality uniforms, ready to brand.',
@@ -50,7 +50,7 @@ export default function HeroCarousel() {
 
   useEffect(() => {
     if (paused) return;
-    const t = setInterval(() => setActive((a) => (a + 1) % SLIDES.length), 5500);
+    const t = setInterval(() => setActive((a) => (a + 1) % SLIDES.length), 5000);
     return () => clearInterval(t);
   }, [paused]);
 
