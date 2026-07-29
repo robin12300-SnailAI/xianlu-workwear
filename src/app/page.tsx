@@ -4,6 +4,7 @@ import ProductCard from '@/components/ProductCard';
 import HeroCarousel from '@/components/HeroCarousel';
 import Reveal from '@/components/Reveal';
 import SmartImage from '@/components/SmartImage';
+import QuoteCTA from '@/components/QuoteCTA';
 
 export default async function Home() {
   const products = await getProducts();
@@ -116,30 +117,7 @@ export default async function Home() {
       </section>
 
       {/* ── CTA band ─────────────────────────────────────────── */}
-      <section className="container-x py-16">
-        <Reveal>
-          <div
-            className="rounded-[var(--radius)] px-8 py-12 text-center text-white overflow-hidden relative"
-            style={{ background: 'linear-gradient(120deg,#0a2540 0%,#0a66c2 100%)' }}
-          >
-            <h2 className="font-head font-extrabold text-3xl md:text-4xl">Need a bulk order or custom logo?</h2>
-            <p className="text-white/85 mt-3 max-w-xl mx-auto">
-              Get a tailored quote for your team. Embroidery, printing and indent service available.
-            </p>
-            <div className="flex flex-wrap gap-3 justify-center mt-7">
-              <a
-                href="mailto:info@xianlu.com.au"
-                className="btn-primary !bg-white !text-[#0a2540] hover:!bg-white/90"
-              >
-                Request a Quote
-              </a>
-              <Link href="/products" className="btn-ghost !text-white !border-white/40 hover:!bg-white/10 hover:!border-white">
-                Browse Products
-              </Link>
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      <QuoteCTA />
     </div>
   );
 }
