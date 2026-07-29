@@ -4,6 +4,7 @@ import ProductCard from '@/components/ProductCard';
 import HeroCarousel from '@/components/HeroCarousel';
 import Reveal from '@/components/Reveal';
 import SmartImage from '@/components/SmartImage';
+import ReadMore from '@/components/ReadMore';
 
 export default async function Home() {
   const products = await getProducts();
@@ -16,14 +17,17 @@ export default async function Home() {
     { icon: 'map', title: 'Sydney Based', sub: 'Local support, real people.' },
   ];
 
+  const BP = '/xianlu-workwear';
+
   const features = [
     {
-      eyebrow: 'BOCINI NEW RANGE',
-      title: 'The latest from Xianlu Workwear',
-      text: 'Discover the newest additions to our range — from durable workwear and corporate apparel to sportswear and promotional clothing. Fresh styles, colours and innovations, built for Australian teams.',
-      img: 'https://loremflickr.com/800/640/workwear,fashion?lock=44',
+      eyebrow: 'DECORATING SERVICES',
+      title: 'Embroidery, Print & Custom Branding',
+      text: 'Xianlu Workwear offers professional embroidery, screen printing, and digital transfer services. Our expert team turns plain garments into branded apparel that makes your business stand out. From vibrant logos to detailed designs, we ensure your workwear looks professional and lasts wash after wash.',
+      expandedText: 'Perfect for corporate uniforms, team wear, promotions, or everyday work apparel. Our in-house decorating services use premium threads, eco-friendly inks, and state-of-the-art equipment to deliver crisp, durable results every time. Whether you need a single custom piece or bulk orders for your entire team, we provide quick turnaround without compromising on quality. Contact us for a free quote and let us bring your brand to life.',
+      img: `${BP}/images/decorating-services.png`,
       href: '/products',
-      cta: 'See more',
+      cta: 'Read more',
     },
   ];
 
@@ -97,6 +101,13 @@ export default async function Home() {
         {features.map((f, i) => (
           <Reveal key={f.eyebrow}>
             <div className={`grid md:grid-cols-2 gap-8 items-center ${i % 2 === 1 ? 'md:[&>*:first-child]:order-2' : ''}`}>
+              <div>
+                <span className="eyebrow">{f.eyebrow}</span>
+                <h3 className="section-title mt-3">{f.title}</h3>
+                <ReadMore previewText={f.text}>
+                  {f.expandedText || f.text}
+                </ReadMore>
+              </div>
               <div className="card overflow-hidden aspect-[4/3]">
                 <SmartImage
                   src={f.img}
@@ -104,14 +115,6 @@ export default async function Home() {
                   alt={f.title}
                   className="w-full h-full object-cover"
                 />
-              </div>
-              <div>
-                <span className="eyebrow">{f.eyebrow}</span>
-                <h3 className="section-title mt-3">{f.title}</h3>
-                <p className="section-lead mt-4">{f.text}</p>
-                <Link href={f.href} className="btn-primary mt-6">
-                  {f.cta} &raquo;
-                </Link>
               </div>
             </div>
           </Reveal>
