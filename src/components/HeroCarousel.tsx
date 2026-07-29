@@ -13,9 +13,12 @@ type Slide = {
   gradient: string;
 };
 
+/** basePath must match next.config.js basePath in production */
+const BP = '/xianlu-workwear';
+
 const SLIDES: Slide[] = [
   {
-    img: '/images/hero-hivis-workwear.png',
+    img: `${BP}/images/hero-hivis-workwear.png`,
     eyebrow: 'Hi-Vis Collection',
     title: 'Safety Meets Comfort',
     subtitle: 'AS/NZS-certified high-visibility workwear built for Australian job sites.',
@@ -24,7 +27,7 @@ const SLIDES: Slide[] = [
     gradient: 'linear-gradient(120deg,#0a2540 0%,#0a66c2 100%)',
   },
   {
-    img: '/images/hero-corporate-uniforms.png',
+    img: `${BP}/images/hero-corporate-uniforms.png`,
     eyebrow: 'Corporate Uniforms',
     title: 'Elevate Your Brand',
     subtitle: 'Premium embroidered corporate wear that looks sharp and lasts.',
@@ -33,7 +36,7 @@ const SLIDES: Slide[] = [
     gradient: 'linear-gradient(120deg,#0f172a 0%,#1e3a5f 100%)',
   },
   {
-    img: '/images/hero-chef-hospitality.png',
+    img: `${BP}/images/hero-chef-hospitality.png`,
     eyebrow: 'Chef & Hospitality',
     title: 'Built for the Floor',
     subtitle: 'Professional chef jackets, aprons & hospitality uniforms, ready to brand.',
