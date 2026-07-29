@@ -35,15 +35,6 @@ const SLIDES: Slide[] = [
     href: '/products?cat=Corporate',
     gradient: 'linear-gradient(120deg,#0f172a 0%,#1e3a5f 100%)',
   },
-  {
-    img: `${BP}/images/hero-chef-hospitality.png`,
-    eyebrow: 'Chef & Hospitality',
-    title: 'Built for the Floor',
-    subtitle: 'Professional chef jackets, aprons & hospitality uniforms, ready to brand.',
-    cta: 'Shop Hospitality',
-    href: '/products?cat=Chef',
-    gradient: 'linear-gradient(120deg,#1a1208 0%,#8a5a1e 100%)',
-  },
 ];
 
 export default function HeroCarousel() {
@@ -53,7 +44,7 @@ export default function HeroCarousel() {
 
   useEffect(() => {
     if (paused) return;
-    const t = setInterval(() => setActive((a) => (a + 1) % SLIDES.length), 5000);
+    const t = setInterval(() => setActive((a) => (a + 1) % SLIDES.length), 3000);
     return () => clearInterval(t);
   }, [paused]);
 
