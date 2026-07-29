@@ -4,7 +4,6 @@ import ProductCard from '@/components/ProductCard';
 import HeroCarousel from '@/components/HeroCarousel';
 import Reveal from '@/components/Reveal';
 import SmartImage from '@/components/SmartImage';
-import ReadMore from '@/components/ReadMore';
 
 export default async function Home() {
   const products = await getProducts();
@@ -23,11 +22,8 @@ export default async function Home() {
     {
       eyebrow: 'DECORATING SERVICES',
       title: 'Embroidery, Print & Custom Branding',
-      text: 'Xianlu Workwear offers professional embroidery, screen printing, and digital transfer services. Our expert team turns plain garments into branded apparel that makes your business stand out. From vibrant logos to detailed designs, we ensure your workwear looks professional and lasts wash after wash.',
-      expandedText: 'Perfect for corporate uniforms, team wear, promotions, or everyday work apparel. Our in-house decorating services use premium threads, eco-friendly inks, and state-of-the-art equipment to deliver crisp, durable results every time. Whether you need a single custom piece or bulk orders for your entire team, we provide quick turnaround without compromising on quality. Contact us for a free quote and let us bring your brand to life.',
+      text: 'Xianlu Workwear offers professional embroidery, screen printing, and heat transfer services. Our expert team turns plain garments into branded apparel that makes your business stand out. From vibrant logos to detailed designs, we ensure your workwear looks professional and long-lasting. Perfect for corporate uniforms, team wear, or everyday work apparel. Whether you need a small order or bulk quantities, we provide fast, friendly, and professional service. We offer competitive prices and premium-quality products. Contact us for a free quote.',
       img: `${BP}/images/decorating-services.png`,
-      href: '/products',
-      cta: 'Read more',
     },
   ];
 
@@ -104,9 +100,7 @@ export default async function Home() {
               <div>
                 <span className="eyebrow">{f.eyebrow}</span>
                 <h3 className="section-title mt-3">{f.title}</h3>
-                <ReadMore previewText={f.text}>
-                  {f.expandedText || f.text}
-                </ReadMore>
+                <p className="section-lead mt-4">{f.text}</p>
               </div>
               <div className="card overflow-hidden aspect-[4/3]">
                 <SmartImage
