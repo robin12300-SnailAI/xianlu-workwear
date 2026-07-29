@@ -25,22 +25,6 @@ export default async function Home() {
       href: '/products',
       cta: 'See more',
     },
-    {
-      eyebrow: 'INDENT SERVICE',
-      title: 'Made to your exact spec',
-      text: 'Our indent service lets you develop garments to your exact specification. We partner with trusted overseas manufacturers so your uniform is uniquely yours — colour, fit and finish.',
-      img: 'https://loremflickr.com/800/640/factory,textile?lock=55',
-      href: '/products?cat=Workwear',
-      cta: 'Read more',
-    },
-    {
-      eyebrow: 'DYE SUBLIMATION',
-      title: 'Colour that never fades',
-      text: 'Dye sublimation brings clothing to life with vibrant, long-lasting designs. Perfect for sportswear, uniforms and promotions — bold colour and comfort that never cracks or peels.',
-      img: 'https://loremflickr.com/800/640/printing,fabric?lock=66',
-      href: '/products',
-      cta: 'Get started',
-    },
   ];
 
   return (
