@@ -94,17 +94,6 @@ export default function HeroCarousel() {
           <p className="text-white/90 mt-4 text-lg max-w-xl" style={{ textShadow: '0 1px 10px rgba(0,0,0,0.3)' }}>
             {SLIDES[active].subtitle}
           </p>
-          <div className="flex flex-wrap gap-3 mt-7">
-            <Link href={SLIDES[active].href} className="btn-primary">
-              {SLIDES[active].cta}
-            </Link>
-            <Link
-              href="/products"
-              className="btn-ghost !text-white !border-white/40 hover:!bg-white/10 hover:!border-white"
-            >
-              View Full Range
-            </Link>
-          </div>
         </div>
       </div>
 
