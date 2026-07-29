@@ -118,35 +118,6 @@ export default async function Home() {
         ))}
       </section>
 
-      {/* ── About band ───────────────────────────────────────── */}
-      <section className="bg-[var(--surface)] border-y border-[var(--border)]">
-        <div className="container-x py-16 grid md:grid-cols-2 gap-10 items-center">
-          <Reveal>
-            <span className="eyebrow">About Us</span>
-            <h2 className="section-title mt-3">Workwear expertise since 2024</h2>
-            <p className="section-lead mt-4">
-              Xianlu Workwear is an expert corporate clothing and workwear supplier, delivering
-              quality garments to Australian businesses. Based in Sydney, we combine style,
-              comfort and practicality for every workplace.
-            </p>
-            <Link href="/products" className="btn-primary mt-6">Our story &raquo;</Link>
-          </Reveal>
-          <Reveal className="grid grid-cols-2 gap-4" delay={120}>
-            {[
-              { n: '500+', l: 'Products' },
-              { n: '8', l: 'Categories' },
-              { n: '24/7', l: 'Online ordering' },
-              { n: '100%', l: 'AU owned' },
-            ].map((s) => (
-              <div key={s.l} className="card p-6 text-center">
-                <div className="font-head font-extrabold text-3xl text-[var(--accent)]">{s.n}</div>
-                <div className="text-sm text-[var(--muted)] mt-1">{s.l}</div>
-              </div>
-            ))}
-          </Reveal>
-        </div>
-      </section>
-
       {/* ── CTA band ─────────────────────────────────────────── */}
       <section className="container-x py-16">
         <Reveal>
