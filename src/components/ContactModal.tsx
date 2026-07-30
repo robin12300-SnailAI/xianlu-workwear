@@ -1,22 +1,27 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { getMergedAbout } from '../lib/localContent';
+import type { AboutData } from '../lib/types';
+import defaultAbout from '../../data/about.json';
 
 interface ContactModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-const ABOUT_PARAGRAPHS = [
-  'Welcome to Xianlu Workwear.',
-  'At Xianlu Workwear, we are committed to providing high-quality workwear that combines durability, comfort, and professional style. Whether you work in construction, warehousing, hospitality, healthcare, manufacturing, or other industries, our goal is to help you perform at your best with reliable clothing designed for everyday work.',
-  'We carefully select products that meet the demands of modern workplaces, offering practical designs, quality materials, and excellent value. From work shirts and pants to hi-vis safety wear, jackets, footwear, and accessories, every product is chosen with performance and comfort in mind.',
-  'Customer satisfaction is at the heart of everything we do. We strive to provide outstanding service, fast shipping, competitive pricing, and a smooth online shopping experience for individuals, businesses, and teams across Australia.',
-  'At Xianlu Workwear, we believe that quality workwear is more than just clothing—it is protection, confidence, and professionalism. We are proud to support hardworking people by delivering dependable products they can trust every day.',
-  'Thank you for choosing Xianlu Workwear. We look forward to serving you.',
-];
-
+/**
+ * About Us 弹窗。
+ * 内容来自后台管理（localStorage 草稿）或仓库 data/about.json（已发布版本）。
+ */
 export default function ContactModal({ open, onClose }: ContactModalProps) {
+  const [data, setData] = useState<AboutData>(defaultAbout as unknown as AboutData);
+
+  // 打开时读一次，保证后台刚保存的内容能立刻反映出来
+  useEffect(() => {
+    if (open) setData(getMergedAbout());
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -31,6 +36,8 @@ export default function ContactModal({ open, onClose }: ContactModalProps) {
   }, [open, onClose]);
 
   if (!open) return null;
+
+  const blocks = data?.blocks ?? [];
 
   return (
     <div
@@ -65,16 +72,31 @@ export default function ContactModal({ open, onClose }: ContactModalProps) {
 
         {/* Content */}
         <div className="overflow-y-auto p-6 sm:p-8 space-y-4 text-[var(--ink-2)] leading-relaxed">
-          {ABOUT_PARAGRAPHS.map((p, i) => (
-            <p key={i} className={i === 0 ? 'font-semibold text-[var(--ink)]' : ''}>
-              {p}
-            </p>
-          ))}
+          {data?.heroImage ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={data.heroImage}
+              alt="Xianlu Workwear"
+              className="w-full rounded-xl border border-[var(--border)] object-cover max-h-64 mb-2"
+            />
+          ) : null}
+
+          {blocks.map((b, i) =>
+            b.type === 'heading' ? (
+              <h3
+                key={i}
+                className="font-head font-bold text-[var(--ink)] text-base pt-1"
+                dangerouslySetInnerHTML={{ __html: b.content }}
+              />
+            ) : (
+              <p key={i} dangerouslySetInnerHTML={{ __html: b.content }} />
+            )
+          )}
         </div>
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-[var(--border)] bg-[var(--surface-2)] text-xs text-[var(--muted)]">
-          Paddy&apos;s Market, Sydney NSW · Australia-wide delivery · info@xianlu.com.au
+          {data?.footerNote || 'Australia-wide delivery'}
         </div>
       </div>
     </div>

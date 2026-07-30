@@ -1,13 +1,26 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { getMergedContact } from '../lib/localContent';
+import type { ContactData } from '../lib/types';
+import defaultContact from '../../data/contact.json';
 
 interface ContactInfoModalProps {
   open: boolean;
   onClose: () => void;
 }
 
+/**
+ * Contact Us 弹窗。
+ * 内容来自后台管理（localStorage 草稿）或仓库 data/contact.json（已发布版本）。
+ */
 export default function ContactInfoModal({ open, onClose }: ContactInfoModalProps) {
+  const [data, setData] = useState<ContactData>(defaultContact as unknown as ContactData);
+
+  useEffect(() => {
+    if (open) setData(getMergedContact());
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -22,6 +35,8 @@ export default function ContactInfoModal({ open, onClose }: ContactInfoModalProp
   }, [open, onClose]);
 
   if (!open) return null;
+
+  const telHref = `tel:${(data?.phone || '').replace(/\s+/g, '')}`;
 
   return (
     <div
@@ -56,28 +71,62 @@ export default function ContactInfoModal({ open, onClose }: ContactInfoModalProp
 
         {/* Content */}
         <div className="overflow-y-auto p-6 sm:p-8 space-y-5 text-[var(--ink-2)]">
-          <p className="text-sm leading-relaxed">
-            Feel free to reach out to us with any questions, bulk orders, or enquiries.
-          </p>
+          {data?.additionalInfo ? (
+            <p className="text-sm leading-relaxed">{data.additionalInfo}</p>
+          ) : null}
 
           <div className="space-y-3 text-sm">
-            <div className="flex gap-3">
-              <span className="font-semibold text-[var(--ink)] min-w-[4rem]">Address</span>
-              <span>Parklea Markets Stall #298</span>
-            </div>
-            <div className="flex gap-3">
-              <span className="font-semibold text-[var(--ink)] min-w-[4rem]">Phone</span>
-              <a href="tel:0406669868" className="text-[var(--accent)] hover:underline">
-                0406 669 868
-              </a>
-            </div>
-            <div className="flex gap-3">
-              <span className="font-semibold text-[var(--ink)] min-w-[4rem]">Email</span>
-              <a href="mailto:denisking1976@hotmail.com" className="text-[var(--accent)] hover:underline break-all">
-                denisking1976@hotmail.com
-              </a>
-            </div>
+            {data?.address ? (
+              <div className="flex gap-3">
+                <span className="font-semibold text-[var(--ink)] min-w-[4rem]">Address</span>
+                <span>{data.address}</span>
+              </div>
+            ) : null}
+
+            {data?.phone ? (
+              <div className="flex gap-3">
+                <span className="font-semibold text-[var(--ink)] min-w-[4rem]">Phone</span>
+                <a href={telHref} className="text-[var(--accent)] hover:underline">
+                  {data.phone}
+                </a>
+              </div>
+            ) : null}
+
+            {data?.email ? (
+              <div className="flex gap-3">
+                <span className="font-semibold text-[var(--ink)] min-w-[4rem]">Email</span>
+                <a
+                  href={`mailto:${data.email}`}
+                  className="text-[var(--accent)] hover:underline break-all"
+                >
+                  {data.email}
+                </a>
+              </div>
+            ) : null}
+
+            {data?.hours ? (
+              <div className="flex gap-3">
+                <span className="font-semibold text-[var(--ink)] min-w-[4rem]">Hours</span>
+                <span>{data.hours}</span>
+              </div>
+            ) : null}
           </div>
+
+          {/* 地图位置标注 */}
+          {data?.mapEmbedUrl ? (
+            <div className="rounded-xl overflow-hidden border border-[var(--border)]">
+              <iframe
+                src={data.mapEmbedUrl}
+                title="Xianlu Workwear location"
+                width="100%"
+                height="200"
+                style={{ border: 0 }}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+            </div>
+          ) : null}
         </div>
 
         {/* Footer */}

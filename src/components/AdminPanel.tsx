@@ -1,11 +1,15 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import type { Product, Category } from '@/lib/types';
+import type { Product, Category, AboutData, ContactData, AboutBlock } from '@/lib/types';
 import { getMergedProducts, addLocalProduct, updateLocalProduct, deleteLocalProduct, saveLocalProducts, getMergedCategories, saveLocalCategories } from '@/lib/localProducts';
-import { publishProducts, publishCategories, getGithubToken, saveGithubToken, ACTIONS_URL } from '@/lib/githubSync';
+import { getMergedAbout, saveLocalAbout, getMergedContact, saveLocalContact, addAboutBlock as addBlock, updateAboutBlock as updateBlockFn, deleteAboutBlock as removeBlock } from '@/lib/localContent';
+import { publishProducts, publishCategories, publishAbout, publishContact, getGithubToken, saveGithubToken, ACTIONS_URL } from '@/lib/githubSync';
+
+type AdminTab = 'products' | 'about' | 'contact';
 
 export default function AdminPanel() {
+  const [activeTab, setActiveTab] = useState<AdminTab>('products');
   const [products, setProducts] = useState<Product[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<Partial<Product>>({ name: '', category: 'HiVis', description: '', price: 0, images: [], colors: [], sizes: [], inStock: true, code: '' });
@@ -26,10 +30,26 @@ export default function AdminPanel() {
   const [editingCatValue, setEditingCatValue] = useState('');
   const [catDirty, setCatDirty] = useState(false);
 
+  // ===== 关于我们状态 =====
+  const [aboutData, setAboutData] = useState<AboutData>({ blocks: [] });
+  const [editingBlockIdx, setEditingBlockIdx] = useState<number | null>(null);
+  const [blockEditorContent, setBlockEditorContent] = useState('');
+  const [newBlockType, setNewBlockType] = useState<'paragraph' | 'heading'>('paragraph');
+  const [newBlockContent, setNewBlockContent] = useState('');
+  const [aboutDirty, setAboutDirty] = useState(false);
+  const aboutImageRef = useRef<HTMLInputElement>(null);
+
+  // ===== 联系我们状态 =====
+  const [contactData, setContactData] = useState<ContactData>({
+    address: '', phone: '', email: '', hours: '', mapEmbedUrl: '', additionalInfo: '',
+  });
+  const [contactDirty, setContactDirty] = useState(false);
+
   function load() {
     setProducts(getMergedProducts());
-    // Contact Us 不是产品分类，而是从 Header/Footer 弹出的关于我们弹窗
     setCategories(getMergedCategories().filter((c) => c.toLowerCase() !== 'contact us'));
+    setAboutData(getMergedAbout());
+    setContactData(getMergedContact());
   }
   useEffect(() => {
     load();
@@ -41,7 +61,6 @@ export default function AdminPanel() {
     setEditingId(p.id);
   }
 
-  // 上传图片 → 先以 Base64 暂存，发布时自动上传到仓库
   function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -62,7 +81,6 @@ export default function AdminPanel() {
     const { name, category, description, price, images, colors, sizes, inStock, code, seoTitle, seoDescription } = form;
     if (!name || !price) return alert('请填写产品名称和价格');
     const trimmedCode = (code || '').trim();
-    // 产品码唯一性校验（每个商品应有不同 code）
     if (trimmedCode) {
       const conflict = getMergedProducts().some(
         (p) => p.id !== editingId && (p.code || '').trim().toLowerCase() === trimmedCode.toLowerCase(),
@@ -122,7 +140,6 @@ export default function AdminPanel() {
     setCategories(next);
     saveLocalCategories(next);
 
-    // 同步更新所有产品的分类字段
     const updated = getMergedProducts().map((p) =>
       p.category === oldName ? { ...p, category: newName } : p,
     );
@@ -170,7 +187,7 @@ export default function AdminPanel() {
     setPubErr('');
   }
 
-  async function publish() {
+  async function publishProductsAndCategories() {
     setPubErr('');
     setPubMsg('');
     if (!getGithubToken()) {
@@ -195,9 +212,154 @@ export default function AdminPanel() {
     }
   }
 
+  // ===== 关于我们：内容块操作 =====
+  function startEditBlock(idx: number) {
+    setEditingBlockIdx(idx);
+    setBlockEditorContent(aboutData.blocks[idx].content);
+  }
+
+  function saveBlockEdit() {
+    if (editingBlockIdx === null) return;
+    const updated = updateBlockFn(aboutData.blocks, editingBlockIdx, blockEditorContent);
+    const newData = { ...aboutData, blocks: updated };
+    setAboutData(newData);
+    saveLocalAbout(newData);
+    setEditingBlockIdx(null);
+    setBlockEditorContent('');
+    setAboutDirty(true);
+  }
+
+  function cancelBlockEdit() {
+    setEditingBlockIdx(null);
+    setBlockEditorContent('');
+  }
+
+  function handleAddBlock() {
+    const content = newBlockContent.trim();
+    if (!content) return alert('请输入内容');
+    const block: AboutBlock = { type: newBlockType, content };
+    const updated = addBlock(aboutData.blocks, block);
+    const newData = { ...aboutData, blocks: updated };
+    setAboutData(newData);
+    saveLocalAbout(newData);
+    setNewBlockContent('');
+    setAboutDirty(true);
+  }
+
+  function handleDeleteBlock(idx: number) {
+    if (!confirm('确定删除这个内容块？')) return;
+    const updated = removeBlock(aboutData.blocks, idx);
+    const newData = { ...aboutData, blocks: updated };
+    setAboutData(newData);
+    saveLocalAbout(newData);
+    setAboutDirty(true);
+  }
+
+  function handleAboutImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const url = reader.result as string;
+      const newData = { ...aboutData, heroImage: url };
+      setAboutData(newData);
+      saveLocalAbout(newData);
+      setAboutDirty(true);
+    };
+    reader.readAsDataURL(file);
+    if (aboutImageRef.current) aboutImageRef.current.value = '';
+  }
+
+  function removeAboutImage() {
+    const newData = { ...aboutData, heroImage: undefined };
+    setAboutData(newData);
+    saveLocalAbout(newData);
+    setAboutDirty(true);
+  }
+
+  async function publishAboutContent() {
+    setPubErr('');
+    setPubMsg('');
+    if (!getGithubToken()) {
+      setPubErr('请先设置 GitHub Token（在产品管理的「发布设置」中）');
+      return;
+    }
+    if (!confirm('确定发布关于我们内容到线上网站吗？')) return;
+    setPublishing(true);
+    try {
+      const cleaned = await publishAbout(aboutData, (m) => setPubMsg(m));
+      saveLocalAbout(cleaned);
+      setAboutDirty(false);
+      setPubMsg('✅ 关于我们内容已发布！约 2-3 分钟后生效。');
+      load();
+    } catch (e) {
+      setPubErr(e instanceof Error ? e.message : String(e));
+      setPubMsg('');
+    } finally {
+      setPublishing(false);
+    }
+  }
+
+  // ===== 联系我们：表单操作 =====
+  function handleContactChange(field: keyof ContactData, value: string) {
+    const newData = { ...contactData, [field]: value };
+    setContactData(newData);
+    saveLocalContact(newData);
+    setContactDirty(true);
+  }
+
+  async function publishContactContent() {
+    setPubErr('');
+    setPubMsg('');
+    if (!getGithubToken()) {
+      setPubErr('请先设置 GitHub Token（在产品管理的「发布设置」中）');
+      return;
+    }
+    if (!confirm('发布联系我们信息到线上网站吗？')) return;
+    setPublishing(true);
+    try {
+      await publishContact(contactData, (m) => setPubMsg(m));
+      setContactDirty(false);
+      setPubMsg('✅ 联系我们信息已发布！约 2-3 分钟后生效。');
+      load();
+    } catch (e) {
+      setPubErr(e instanceof Error ? e.message : String(e));
+      setPubMsg('');
+    } finally {
+      setPublishing(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {/* ── Tab Navigation ──────────────────────── */}
+      <div className="flex gap-1 bg-gray-100 rounded-lg p-1 w-fit flex-wrap">
+        {[
+          { key: 'products' as const, label: '产品管理', icon: '📦' },
+          { key: 'about' as const, label: '关于我们', icon: '🏢' },
+          { key: 'contact' as const, label: '联系我们', icon: '📞' },
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-all cursor-pointer ${
+              activeTab === tab.key
+                ? 'bg-white text-[var(--ink)] shadow-sm'
+                : 'text-[var(--muted)] hover:text-[var(--ink)]'
+            }`}
+          >
+            <span>{tab.icon}</span>
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ════════════════════════════════════════ */}
+      {/* ── Products Tab ────────────────────────── */}
+      {/* ════════════════════════════════════════ */}
+      {activeTab === 'products' && (
+        <>
+          <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">产品管理</h1>
         <button onClick={() => { resetForm(); setEditingId(null); }} className="text-xs text-gray-400 hover:text-brand">+ 新建</button>
       </div>
@@ -212,7 +374,7 @@ export default function AdminPanel() {
             </div>
           </div>
           <button
-            onClick={publish}
+            onClick={publishProductsAndCategories}
             disabled={publishing}
             className="px-4 py-2 rounded-lg bg-green-600 text-white font-semibold text-sm hover:bg-green-700 transition disabled:opacity-50 whitespace-nowrap"
           >
@@ -307,7 +469,7 @@ export default function AdminPanel() {
           {categories.map((c) => <option key={c}>{c}</option>)}
         </select>
         <input placeholder="价格 AUD" type="number" step="0.01" value={form.price || 0} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} className="border rounded px-2 py-1 text-sm" />
-        <input placeholder="产品码（每个商品唯一，如 SKU-001）" value={form.code || ''} onChange={(e) => setForm({ ...form, code: e.target.value })} className="border rounded px-2 py-1 text-sm" />
+        <input placeholder="产品码（SKU）" value={form.code || ''} onChange={(e) => setForm({ ...form, code: e.target.value })} className="border rounded px-2 py-1 text-sm" />
 
         {/* 图片上传 */}
         <div className="md:col-span-2 space-y-2">
@@ -367,6 +529,283 @@ export default function AdminPanel() {
           <div className="p-6 text-center text-gray-400 text-sm">暂无产品，用上方表单添加第一个吧</div>
         )}
       </div>
+        </>
+      )}
+
+      {/* ════════════════════════════════════════ */}
+      {/* ── About Us Tab ───────────────────────── */}
+      {/* ════════════════════════════════════════ */}
+      {activeTab === 'about' && (
+        <>
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-bold">关于我们 — 内容管理</h1>
+          </div>
+
+          {/* 发布按钮 */}
+          <div className="bg-white border rounded-xl p-4 space-y-3 shadow-sm">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div>
+                <div className="font-semibold text-sm">发布关于我们内容</div>
+                <div className="text-xs text-gray-500 mt-0.5">修改后点发布才会在线上显示（约 2-3 分钟生效）。</div>
+              </div>
+              <button
+                onClick={publishAboutContent}
+                disabled={publishing}
+                className="px-4 py-2 rounded-lg bg-green-600 text-white font-semibold text-sm hover:bg-green-700 transition disabled:opacity-50 whitespace-nowrap"
+              >
+                {publishing ? '发布中…' : aboutDirty ? '🚀 发布（有未发布改动）' : '🚀 发布到线上'}
+              </button>
+            </div>
+            {pubMsg && <div className="text-xs text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">{pubMsg}</div>}
+            {pubErr && <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">❌ {pubErr}</div>}
+          </div>
+
+          {/* 展示图片管理 */}
+          <div className="bg-white border rounded-xl p-4 space-y-3 shadow-sm">
+            <h2 className="font-semibold text-sm">公司展示图片</h2>
+            <p className="text-xs text-gray-500">显示在 About Us 弹窗顶部的图片（建议尺寸 800×300 以上）。</p>
+            {aboutData.heroImage && (
+              <div className="relative inline-block border rounded-xl overflow-hidden max-w-md">
+                <img src={aboutData.heroImage} alt="Company hero" className="w-full h-40 object-cover" />
+                <button onClick={removeAboutImage} className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600">删除图片</button>
+              </div>
+            )}
+            <label className="inline-flex items-center gap-1 cursor-pointer bg-gray-100 hover:bg-gray-200 border rounded px-3 py-1.5 text-sm transition-colors">
+              📷 {aboutData.heroImage ? '更换图片' : '上传展示图片'}
+              <input ref={aboutImageRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange={handleAboutImageUpload} className="hidden" />
+            </label>
+          </div>
+
+          {/* 内容块列表 */}
+          <div className="bg-white border rounded-xl p-4 space-y-3 shadow-sm">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold text-sm">内容段落（支持 HTML 富文本）</h2>
+              <span className="text-xs text-gray-400">按顺序显示在 About Us 弹窗中</span>
+            </div>
+
+            <div className="space-y-2">
+              {aboutData.blocks.map((block, idx) => (
+                <div key={idx} className={`border rounded-lg p-3 ${editingBlockIdx === idx ? 'border-[var(--accent)] bg-blue-50/30' : 'bg-gray-50'}`}>
+                  {editingBlockIdx === idx ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${block.type === 'heading' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                          {block.type === 'heading' ? '📌 标题' : '📝 段落'}
+                        </span>
+                        <span className="text-xs text-gray-400">#{idx + 1}</span>
+                      </div>
+                      <textarea
+                        value={blockEditorContent}
+                        onChange={(e) => setBlockEditorContent(e.target.value)}
+                        className="w-full border rounded px-3 py-2 text-sm min-h-[80px]"
+                        rows={4}
+                        placeholder="支持 HTML 标签，如 <b>粗体</b> 或 <br/> 换行"
+                      />
+                      <div className="flex gap-2">
+                        <button onClick={saveBlockEdit} className="px-3 py-1 rounded bg-brand text-white text-xs hover:bg-brand/90">保存</button>
+                        <button onClick={cancelBlockEdit} className="px-3 py-1 rounded border text-xs hover:bg-gray-50">取消</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${block.type === 'heading' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                            {block.type === 'heading' ? '📌 标题' : '📝 段落'}
+                          </span>
+                          <span className="text-xs text-gray-400">#{idx + 1}</span>
+                        </div>
+                        <div
+                          className="text-sm text-[var(--ink-2)] line-clamp-2"
+                          dangerouslySetInnerHTML={{ __html: block.content }}
+                        />
+                      </div>
+                      <div className="flex gap-2 shrink-0">
+                        <button onClick={() => startEditBlock(idx)} className="text-brand text-xs">编辑</button>
+                        <button onClick={() => handleDeleteBlock(idx)} className="text-red-500 text-xs">删除</button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+              {aboutData.blocks.length === 0 && (
+                <div className="p-6 text-center text-gray-400 text-sm">暂无内容块，请在下方添加</div>
+              )}
+            </div>
+
+            {/* 新增内容块 */}
+            <div className="border-t pt-3 mt-3">
+              <h3 className="text-xs font-semibold text-gray-500 mb-2">+ 新增内容块</h3>
+              <div className="flex gap-2 mb-2">
+                <button
+                  onClick={() => setNewBlockType('paragraph')}
+                  className={`px-3 py-1 rounded text-xs border transition ${newBlockType === 'paragraph' ? 'bg-blue-50 border-blue-300 text-blue-700' : 'hover:bg-gray-50'}`}
+                >
+                  📝 段落
+                </button>
+                <button
+                  onClick={() => setNewBlockType('heading')}
+                  className={`px-3 py-1 rounded text-xs border transition ${newBlockType === 'heading' ? 'bg-purple-50 border-purple-300 text-purple-700' : 'hover:bg-gray-50'}`}
+                >
+                  📌 标题
+                </button>
+              </div>
+              <textarea
+                value={newBlockContent}
+                onChange={(e) => setNewBlockContent(e.target.value)}
+                className="w-full border rounded px-3 py-2 text-sm"
+                rows={3}
+                placeholder="输入内容（支持 HTML 标签）..."
+              />
+              <button onClick={handleAddBlock} className="mt-2 px-4 py-1.5 rounded-lg bg-brand text-white text-sm hover:bg-brand/90 transition">
+                添加{newBlockType === 'heading' ? '标题' : '段落'}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ════════════════════════════════════════ */}
+      {/* ── Contact Us Tab ──────────────────────── */}
+      {/* ════════════════════════════════════════ */}
+      {activeTab === 'contact' && (
+        <>
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-bold">联系我们 — 信息管理</h1>
+          </div>
+
+          {/* 发布按钮 */}
+          <div className="bg-white border rounded-xl p-4 space-y-3 shadow-sm">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div>
+                <div className="font-semibold text-sm">发布联系信息</div>
+                <div className="text-xs text-gray-500 mt-0.5">修改后点发布才会在线上显示（约 2-3 分钟生效）。</div>
+              </div>
+              <button
+                onClick={publishContactContent}
+                disabled={publishing}
+                className="px-4 py-2 rounded-lg bg-green-600 text-white font-semibold text-sm hover:bg-green-700 transition disabled:opacity-50 whitespace-nowrap"
+              >
+                {publishing ? '发布中…' : contactDirty ? '🚀 发布（有未发布改动）' : '🚀 发布到线上'}
+              </button>
+            </div>
+            {pubMsg && <div className="text-xs text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">{pubMsg}</div>}
+            {pubErr && <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">❌ {pubErr}</div>}
+          </div>
+
+          {/* 联系信息表单 */}
+          <div className="bg-white border rounded-xl p-4 grid md:grid-cols-2 gap-4 shadow-sm">
+            <div className="md:col-span-2">
+              <label className="block text-xs font-semibold text-gray-500 mb-1">📍 公司地址</label>
+              <input
+                value={contactData.address}
+                onChange={(e) => handleContactChange('address', e.target.value)}
+                className="w-full border rounded-lg px-3 py-2 text-sm"
+                placeholder="例如：Parklea Markets Stall #298, Parklea NSW 2768, Australia"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">📞 电话号码</label>
+              <input
+                value={contactData.phone}
+                onChange={(e) => handleContactChange('phone', e.target.value)}
+                className="w-full border rounded-lg px-3 py-2 text-sm"
+                placeholder="例如：0406 669 868"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">📧 邮箱地址</label>
+              <input
+                value={contactData.email}
+                onChange={(e) => handleContactChange('email', e.target.value)}
+                className="w-full border rounded-lg px-3 py-2 text-sm"
+                placeholder="例如：info@xianlu.com.au"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">🕐 营业时间</label>
+              <input
+                value={contactData.hours}
+                onChange={(e) => handleContactChange('hours', e.target.value)}
+                className="w-full border rounded-lg px-3 py-2 text-sm"
+                placeholder="例如：Mon–Sat: 9:00 AM – 5:00 PM | Sun: Closed"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-xs font-semibold text-gray-500 mb-1">🗺️ Google Maps 嵌入 URL</label>
+              <input
+                value={contactData.mapEmbedUrl}
+                onChange={(e) => handleContactChange('mapEmbedUrl', e.target.value)}
+                className="w-full border rounded-lg px-3 py-2 text-sm font-mono text-xs"
+                placeholder="粘贴 Google Maps 嵌入 iframe 的 src 地址..."
+              />
+              <p className="text-[10px] text-gray-400 mt-1">
+                获取方式：Google Maps → 搜索地点 → 分享 → 嵌入地图 → 复制 iframe src 属性值
+              </p>
+              {contactData.mapEmbedUrl && (
+                <div className="mt-2 rounded-lg overflow-hidden border">
+                  <iframe
+                    src={contactData.mapEmbedUrl}
+                    width="100%"
+                    height="200"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="地图预览"
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-xs font-semibold text-gray-500 mb-1">📋 补充信息</label>
+              <textarea
+                value={contactData.additionalInfo}
+                onChange={(e) => handleContactChange('additionalInfo', e.target.value)}
+                className="w-full border rounded-lg px-3 py-2 text-sm"
+                rows={2}
+                placeholder="例如：Australia-wide delivery available. Bulk order discounts..."
+              />
+            </div>
+          </div>
+
+          {/* 实时预览卡片 */}
+          <div className="bg-white border rounded-xl p-4 shadow-sm">
+            <h2 className="font-semibold text-sm mb-3">👁 实时预览（前台显示效果）</h2>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 rounded bg-blue-100 text-blue-600 grid place-items-center shrink-0 text-sm">📍</div>
+                  <div><div className="text-xs font-semibold">Address</div><div className="text-xs text-gray-500">{contactData.address || '—'}</div></div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 rounded bg-green-100 text-green-600 grid place-items-center shrink-0 text-sm">📞</div>
+                  <div><div className="text-xs font-semibold">Phone</div><div className="text-xs text-[var(--accent)]">{contactData.phone || '—'}</div></div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 rounded bg-orange-100 text-orange-600 grid place-items-center shrink-0 text-sm">📧</div>
+                  <div><div className="text-xs font-semibold">Email</div><div className="text-xs text-[var(--accent)]">{contactData.email || '—'}</div></div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 rounded bg-purple-100 text-purple-600 grid place-items-center shrink-0 text-sm">🕐</div>
+                  <div><div className="text-xs font-semibold">Hours</div><div className="text-xs text-gray-500">{contactData.hours || '—'}</div></div>
+                </div>
+              </div>
+              {contactData.additionalInfo && (
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="text-xs font-semibold mb-1">ℹ 补充信息</div>
+                  <div className="text-xs text-gray-500 leading-relaxed">{contactData.additionalInfo}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -17,3 +17,24 @@ export interface Product {
   seoTitle?: string; // SEO 标题（留空则用 name）
   seoDescription?: string; // SEO 描述
 }
+
+// ===== 关于我们 / 联系我们 内容管理 =====
+export interface AboutBlock {
+  type: 'paragraph' | 'heading';
+  content: string; // 支持 HTML 富文本
+}
+
+export interface AboutData {
+  blocks: AboutBlock[];
+  heroImage?: string; // 公司展示图片（Base64 或 URL）
+  footerNote?: string; // 弹窗底部一行小字
+}
+
+export interface ContactData {
+  address: string;
+  phone: string;
+  email: string;
+  hours: string;
+  mapEmbedUrl: string; // Google Maps 嵌入 URL
+  additionalInfo: string;
+}

@@ -1,4 +1,4 @@
-import type { Product } from './types';
+import type { Product, AboutData, ContactData } from './types';
 
 // ===== 配置 =====
 const GH_OWNER = 'robin12300-SnailAI';
@@ -158,6 +158,56 @@ export async function publishProducts(
     `chore(admin): 后台更新产品数据（共 ${cleaned.length} 个产品）`,
   );
   return cleaned;
+}
+
+// ===== 发布：关于我们内容 =====
+export async function publishAbout(
+  data: AboutData,
+  onProgress?: (msg: string) => void,
+): Promise<AboutData> {
+  if (!getGithubToken()) {
+    throw new Error('尚未设置 GitHub Token，请先在「发布设置」里粘贴并保存 Token');
+  }
+  const cleaned: AboutData = JSON.parse(JSON.stringify(data));
+
+  // 上传 hero 图片（如果是 base64）
+  if (cleaned.heroImage && cleaned.heroImage.startsWith('data:')) {
+    const match = cleaned.heroImage.match(/^data:image\/(png|jpeg|jpg|webp|gif);base64,(.+)$/);
+    if (match) {
+      const ext = match[1] === 'jpeg' ? 'jpg' : match[1];
+      const fileName = `about-hero-${Date.now().toString(36)}.${ext}`;
+      onProgress?.(`正在上传关于我们图片 ${fileName} ...`);
+      await putFile(`public/images/${fileName}`, match[2], `chore(admin): 上传关于我们图片 ${fileName}`);
+      cleaned.heroImage = `${PAGES_BASE}/images/${fileName}`;
+    }
+  }
+
+  onProgress?.('正在提交关于我们数据 about.json ...');
+  const json = JSON.stringify(cleaned, null, 2) + '\n';
+  await putFile(
+    'data/about.json',
+    utf8ToBase64(json),
+    'chore(admin): 后台更新关于我们内容',
+  );
+  return cleaned;
+}
+
+// ===== 发布：联系我们内容 =====
+export async function publishContact(
+  data: ContactData,
+  onProgress?: (msg: string) => void,
+): Promise<ContactData> {
+  if (!getGithubToken()) {
+    throw new Error('尚未设置 GitHub Token，请先在「发布设置」里粘贴并保存 Token');
+  }
+  onProgress?.('正在提交联系我们数据 contact.json ...');
+  const json = JSON.stringify(data, null, 2) + '\n';
+  await putFile(
+    'data/contact.json',
+    utf8ToBase64(json),
+    'chore(admin): 后台更新联系我们信息',
+  );
+  return data;
 }
 
 export const ACTIONS_URL = `https://github.com/${GH_OWNER}/${GH_REPO}/actions`;
