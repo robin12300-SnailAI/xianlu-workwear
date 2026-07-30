@@ -178,5 +178,45 @@
     "id": "pms4i3vcx",
     "slug": "hi-vis-l-s-polo-shirt-1312-3vcx",
     "code": "1312"
+  },
+  {
+    "name": "HI VIS & WORK S/S POLO SHIRT 9060",
+    "category": "HiVis",
+    "description": "FABRIC: 100% POLYESTER",
+    "price": 15,
+    "images": [
+      "https://robin12300-snailai.github.io/xianlu-workwear/images/products/pms7fjb2f-1-ms7hijkk.png"
+    ],
+    "colors": [
+      "Navy/Yellow Navy/Orange Yellow/Navy Orange/Navy"
+    ],
+    "sizes": [
+      "XS-5XL"
+    ],
+    "inStock": true,
+    "code": "9060",
+    "seoTitle": "xianlu workwear",
+    "seoDescription": "premium workwear",
+    "id": "pms7fjb2f",
+    "slug": "hi-vis-work-s-s-polo-shirt-9060-jb2f"
+  },
+  {
+    "name": "HI VIS L/S DRILL SHIRT 90116",
+    "category": "shirt",
+    "description": "FABRIC: 100%Cotton",
+    "price": 28,
+    "images": [
+      "https://robin12300-snailai.github.io/xianlu-workwear/images/products/pms7fnrc8-1-ms7hilq7.png"
+    ],
+    "colors": [
+      "Orange/Navy，Yellow/Navy"
+    ],
+    "sizes": [
+      "XS-5XL"
+    ],
+    "inStock": true,
+    "code": "90116",
+    "id": "pms7fnrc8",
+    "slug": "hi-vis-l-s-drill-shirt-90116-nrc8"
   }
 ]
