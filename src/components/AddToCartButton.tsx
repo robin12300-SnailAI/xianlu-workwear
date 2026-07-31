@@ -81,8 +81,35 @@ const COLOUR_HEX: Record<string, string> = {
   Olive: '#556b2f',
 };
 
+function resolveHex(name: string): string {
+  if (COLOUR_HEX[name]) return COLOUR_HEX[name];
+  const titled = name.replace(/\w\S*/g, (t) => t[0].toUpperCase() + t.slice(1).toLowerCase());
+  return COLOUR_HEX[titled] ?? '#9ca3af';
+}
+
 function colourHex(name: string): string {
-  return COLOUR_HEX[name] ?? '#9ca3af';
+  // Two-tone colours (e.g. "Yellow/Navy") → split swatch gradient
+  if (name.includes('/')) {
+    const [a, b] = name.split('/').map((s) => s.trim());
+    const ha = resolveHex(a);
+    const hb = resolveHex(b);
+    return `linear-gradient(135deg, ${ha} 0%, ${ha} 49%, ${hb} 51%, ${hb} 100%)`;
+  }
+  return resolveHex(name);
+}
+
+// ── Normalise colour data ─────────────────────────────────────
+// Product data is inconsistent: some have ["Orange", "Yellow"] (correct array),
+// others have ["yellow，orange"] or ["Orange/Navy，Yellow/Navy"] (comma-joined string).
+// This function normalises everything into a flat array of individual colours.
+function normalizeColors(raw: string[]): string[] {
+  const out: string[] = [];
+  for (const item of raw) {
+    // Split on Chinese comma (，) or comma (,) — both found in wild
+    const parts = item.split(/[,，]/).map((s) => s.trim()).filter(Boolean);
+    out.push(...parts);
+  }
+  return out;
 }
 
 // ── Dropdown Component ──────────────────────────────────────────
@@ -274,8 +301,12 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
   const { addItem } = useCart();
   const router = useRouter();
 
-  // Selection state
-  const [color, setColor] = useState(product.colors[0] ?? '');
+  // ── Normalise colour & size data ───────────────────────────
+  const colors = normalizeColors(product.colors);
+  const sizes = parseSizes(product.sizes);
+
+  // Selection state — start with nothing selected (let user choose)
+  const [color, setColor] = useState('');
   const [size, setSize] = useState('');
   const [qty, setQty] = useState(1);
 
@@ -285,9 +316,6 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
 
   // Success animation state
   const [added, setAdded] = useState(false);
-
-  // ── Expand raw size ranges into individual selectable options ─
-  const sizes = parseSizes(product.sizes);
 
   // ── Derived: available sizes for current color ───────────────
   const getAvailableSizes = useCallback((): string[] => {
@@ -317,8 +345,8 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
 
   // ── Can add to cart? ────────────────────────────────────────
   const canAdd =
-    product.colors.length === 0 ||
-    (product.colors.length > 0 && color && (sizes.length === 0 || size));
+    colors.length === 0 ||
+    (colors.length > 0 && color && (sizes.length === 0 || size));
 
   // Stock message
   const stockMessage = product.inStock
@@ -334,7 +362,7 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
       name: product.name,
       price: product.price,
       image: product.images[0],
-      color: product.colors.length > 0 ? color : undefined,
+      color: colors.length > 0 ? color : undefined,
       size: sizes.length > 0 ? size : undefined,
       qty,
     });
@@ -350,11 +378,11 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
   return (
     <div className="product-selector">
       {/* ── Color Selector ─────────────────────────────────── */}
-      {product.colors.length > 0 && (
+      {colors.length > 0 && (
         <Dropdown
           label="Colour"
           value={color}
-          options={product.colors}
+          options={colors}
           placeholder="Choose a colour"
           getSwatch={colourHex}
           onChange={(c) => {
