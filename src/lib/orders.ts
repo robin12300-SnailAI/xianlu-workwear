@@ -7,12 +7,12 @@ const ORDERS_FILE = path.join(process.cwd(), 'data', 'orders.json');
 export interface Order {
   id: string;
   createdAt: string;
-  customer: { name: string; email: string; address: string };
+  customer: { name: string; email: string; address: string; phone?: string };
   items: CartItem[];
   total: number;
   logoUrl?: string;
   notes?: string;
-  status: 'pending' | 'paid';
+  paymentMethod?: string;
 }
 
 export async function saveOrder(order: Order): Promise<void> {
