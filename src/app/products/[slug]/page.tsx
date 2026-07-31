@@ -50,17 +50,6 @@ export default async function ProductDetail({
         <div className="text-3xl font-bold text-[var(--accent)] mt-3">${product.price.toFixed(2)}</div>
         <p className="text-[var(--ink-2)] mt-5 leading-relaxed">{product.description}</p>
 
-        {product.colors?.length > 0 && (
-          <div className="mt-5">
-            <div className="text-sm font-semibold text-[var(--ink)] mb-2">Colours</div>
-            <div className="flex flex-wrap gap-2">
-              {product.colors.map((c) => (
-                <span key={c} className="chip">{c}</span>
-              ))}
-            </div>
-          </div>
-        )}
-
         <div className="mt-7">
           <AddToCartButton product={product} />
         </div>
