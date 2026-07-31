@@ -22,6 +22,69 @@ interface ProductSelectorProps {
   variantStock?: VariantStock; // optional: per-color size availability
 }
 
+// ── Size Range Parser ───────────────────────────────────────────
+// Expands range strings from the product data into individual options.
+//   "XS-5XL"  → XS, S, M, L, XL, 2XL, 3XL, 4XL, 5XL
+//   "28-46"   → 28, 30, 32, 34, 36, 38, 40, 42, 44, 46 (even steps)
+//   "M"       → M  (single values pass through unchanged)
+const SIZE_SCALE = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL', '7XL'];
+
+function parseSizes(raw: string[]): string[] {
+  const out: string[] = [];
+  for (const s of raw) {
+    // Letter range e.g. "XS-5XL"
+    const letterMatch = s.match(/^([A-Z]+)-([A-Z0-9]+)$/i);
+    if (letterMatch) {
+      const startIdx = SIZE_SCALE.indexOf(letterMatch[1].toUpperCase());
+      const endIdx = SIZE_SCALE.indexOf(letterMatch[2].toUpperCase());
+      if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
+        for (let i = startIdx; i <= endIdx; i++) out.push(SIZE_SCALE[i]);
+        continue;
+      }
+    }
+    // Numeric range e.g. "28-46" → even numbers (waist/inch sizing)
+    const numMatch = s.match(/^(\d+)-(\d+)$/);
+    if (numMatch) {
+      const start = parseInt(numMatch[1], 10);
+      const end = parseInt(numMatch[2], 10);
+      for (let n = start; n <= end; n += 2) out.push(String(n));
+      continue;
+    }
+    out.push(s);
+  }
+  return out;
+}
+
+// ── Colour Name → Hex (for swatches) ───────────────────────────
+const COLOUR_HEX: Record<string, string> = {
+  Orange: '#f97316',
+  Yellow: '#eab308',
+  Red: '#ef4444',
+  Blue: '#3b82f6',
+  Navy: '#1e3a8a',
+  Black: '#111827',
+  White: '#f8fafc',
+  Green: '#22c55e',
+  Grey: '#6b7280',
+  Gray: '#6b7280',
+  Pink: '#ec4899',
+  Purple: '#8b5cf6',
+  Maroon: '#7f1d1d',
+  Teal: '#14b8a6',
+  Brown: '#92400e',
+  Gold: '#d4a017',
+  Silver: '#cbd5e1',
+  Beige: '#d6c7a1',
+  Charcoal: '#36454f',
+  Cyan: '#06b6d4',
+  Lime: '#84cc16',
+  Olive: '#556b2f',
+};
+
+function colourHex(name: string): string {
+  return COLOUR_HEX[name] ?? '#9ca3af';
+}
+
 // ── Dropdown Component ──────────────────────────────────────────
 
 function Dropdown({
@@ -33,6 +96,7 @@ function Dropdown({
   onChange,
   isOpen,
   onToggle,
+  getSwatch,
 }: {
   label: string;
   value: string;
@@ -42,6 +106,7 @@ function Dropdown({
   onChange: (val: string) => void;
   isOpen: boolean;
   onToggle: () => void;
+  getSwatch?: (opt: string) => string | undefined;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -58,6 +123,7 @@ function Dropdown({
   }, [isOpen, onToggle]);
 
   const isDisabled = (opt: string) => disabledOptions?.has(opt) ?? false;
+  const swatch = value ? getSwatch?.(value) : undefined;
 
   return (
     <div className="variant-select-group" ref={ref}>
@@ -69,6 +135,16 @@ function Dropdown({
           onClick={onToggle}
           aria-expanded={isOpen}
         >
+          {swatch && (
+            <span
+              className="variant-swatch"
+              style={{
+                background: swatch,
+                boxShadow: `inset 0 0 0 1px ${swatch === '#f8fafc' ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.35)'}`,
+              }}
+              aria-hidden="true"
+            />
+          )}
           <span className="variant-dropdown-value">{value || placeholder || `Select ${label}`}</span>
           <svg
             className={`variant-dropdown-chevron ${isOpen ? 'variant-chevron-rotated' : ''}`}
@@ -87,6 +163,7 @@ function Dropdown({
             {options.map((opt) => {
               const disabled = isDisabled(opt);
               const selected = opt === value;
+              const optSwatch = getSwatch?.(opt);
               return (
                 <li
                   key={opt}
@@ -105,6 +182,16 @@ function Dropdown({
                     if (!disabled) e.preventDefault();
                   }}
                 >
+                  {optSwatch && (
+                    <span
+                      className="variant-swatch variant-swatch-sm"
+                      style={{
+                        background: optSwatch,
+                        boxShadow: `inset 0 0 0 1px ${optSwatch === '#f8fafc' ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.35)'}`,
+                      }}
+                      aria-hidden="true"
+                    />
+                  )}
                   <span className="option-text">{opt}</span>
                   {selected && (
                     <svg className="option-check" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -199,18 +286,21 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
   // Success animation state
   const [added, setAdded] = useState(false);
 
+  // ── Expand raw size ranges into individual selectable options ─
+  const sizes = parseSizes(product.sizes);
+
   // ── Derived: available sizes for current color ───────────────
   const getAvailableSizes = useCallback((): string[] => {
     if (variantStock && color && variantStock[color]) {
       return variantStock[color] ?? [];
     }
     // No dependency data → all sizes available
-    return product.sizes;
-  }, [variantStock, color, product.sizes]);
+    return sizes;
+  }, [variantStock, color, sizes]);
 
   const availableSizes = getAvailableSizes();
   const disabledSizes = new Set(
-    product.sizes.filter((s) => !availableSizes.includes(s)),
+    sizes.filter((s) => !availableSizes.includes(s)),
   );
 
   // ── Auto-select first available size when color changes ──────
@@ -228,7 +318,7 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
   // ── Can add to cart? ────────────────────────────────────────
   const canAdd =
     product.colors.length === 0 ||
-    (product.colors.length > 0 && color && (product.sizes.length === 0 || size));
+    (product.colors.length > 0 && color && (sizes.length === 0 || size));
 
   // Stock message
   const stockMessage = product.inStock
@@ -245,7 +335,7 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
       price: product.price,
       image: product.images[0],
       color: product.colors.length > 0 ? color : undefined,
-      size: product.sizes.length > 0 ? size : undefined,
+      size: sizes.length > 0 ? size : undefined,
       qty,
     });
 
@@ -266,6 +356,7 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
           value={color}
           options={product.colors}
           placeholder="Choose a colour"
+          getSwatch={colourHex}
           onChange={(c) => {
             setColor(c);
             setSize(''); // Reset size when color changes
@@ -279,11 +370,11 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
       )}
 
       {/* ── Size Selector ──────────────────────────────────── */}
-      {product.sizes.length > 0 && (
+      {sizes.length > 0 && (
         <Dropdown
           label="Size"
           value={size}
-          options={product.sizes}
+          options={sizes}
           disabledOptions={disabledSizes.size > 0 ? disabledSizes : undefined}
           placeholder="Choose a size"
           onChange={setSize}
@@ -296,7 +387,7 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
       )}
 
       {/* ── Size unavailability notice ─────────────────────── */}
-      {color && availableSizes.length < product.sizes.length && availableSizes.length > 0 && (
+      {color && availableSizes.length < sizes.length && availableSizes.length > 0 && (
         <p className="variant-notice">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
             <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.3" />
@@ -380,22 +471,24 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
           align-items: center;
           justify-content: space-between;
           width: 100%;
-          padding: 0.72rem 1rem;
-          background: var(--surface);
+          gap: 0.6rem;
+          padding: 0.7rem 0.95rem;
+          background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
           border: 1.5px solid var(--border);
-          border-radius: var(--radius-sm);
+          border-radius: 0.7rem;
           font-family: var(--font-body);
           font-size: 0.92rem;
           font-weight: 500;
           color: var(--ink);
           cursor: pointer;
-          transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+          transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
           user-select: none;
         }
 
         .variant-dropdown-trigger:hover {
           border-color: var(--accent);
-          box-shadow: 0 0 0 3px var(--accent-soft);
+          box-shadow: 0 4px 14px -6px var(--accent-soft);
+          transform: translateY(-1px);
         }
 
         .variant-dropdown-trigger:focus-visible {
@@ -407,12 +500,23 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
         .variant-dropdown-open {
           border-color: var(--accent);
           box-shadow: 0 0 0 3px var(--accent-soft);
-          border-bottom-left-radius: 0;
-          border-bottom-right-radius: 0;
         }
 
         .variant-dropdown-placeholder {
           color: var(--muted);
+        }
+
+        /* ── Colour swatch ──────────────────────────────── */
+        .variant-swatch {
+          flex-shrink: 0;
+          width: 18px;
+          height: 18px;
+          border-radius: 999px;
+        }
+
+        .variant-swatch-sm {
+          width: 15px;
+          height: 15px;
         }
 
         .variant-dropdown-value {
@@ -425,42 +529,42 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
 
         .variant-dropdown-chevron {
           flex-shrink: 0;
-          margin-left: 0.5rem;
           color: var(--muted);
           transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .variant-chevron-rotated {
           transform: rotate(180deg);
+          color: var(--accent);
         }
 
-        /* ── Dropdown Menu ───────────────────────────────── */
+        /* ── Dropdown Menu (floating popover) ───────────── */
         .variant-dropdown-menu {
           position: absolute;
-          top: 100%;
+          top: calc(100% + 8px);
           left: 0;
           right: 0;
           z-index: 50;
-          max-height: 220px;
+          max-height: 248px;
           overflow-y: auto;
-          padding: 0.35rem 0;
+          padding: 0.4rem;
+          margin: 0;
           background: var(--surface);
-          border: 1.5px solid var(--accent);
-          border-top: none;
-          border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-          box-shadow: var(--shadow);
+          border: 1px solid var(--border);
+          border-radius: 0.85rem;
+          box-shadow: 0 18px 40px -12px rgba(15, 23, 42, 0.28);
           list-style: none;
-          animation: menuSlideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+          animation: menuPop 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        @keyframes menuSlideDown {
+        @keyframes menuPop {
           from {
             opacity: 0;
-            transform: translateY(-6px);
+            transform: translateY(-8px) scale(0.98);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
           }
         }
 
@@ -468,13 +572,15 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
         .variant-option {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
-          padding: 0.6rem 1rem;
-          font-size: 0.89rem;
+          gap: 0.6rem;
+          padding: 0.62rem 0.75rem;
+          margin: 0.1rem 0;
+          font-size: 0.9rem;
           font-weight: 500;
           color: var(--ink);
+          border-radius: 0.55rem;
           cursor: pointer;
-          transition: all 0.15s ease;
+          transition: background 0.15s ease, color 0.15s ease;
         }
 
         .variant-option:hover:not(.variant-option-disabled):not(.variant-option-selected) {
@@ -488,13 +594,14 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
         }
 
         .variant-option-selected:hover {
-          background: color-mix(in srgb, var(--accent) 15%, transparent);
+          background: color-mix(in srgb, var(--accent) 18%, transparent);
         }
 
         .variant-option-disabled {
           color: var(--muted);
           cursor: not-allowed;
-          opacity: 0.55;
+          opacity: 0.5;
+          text-decoration: line-through;
         }
 
         .option-text {

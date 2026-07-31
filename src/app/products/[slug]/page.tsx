@@ -33,7 +33,7 @@ export default async function ProductDetail({
 
   return (
     <div className="grid md:grid-cols-2 gap-10">
-      <div className="card overflow-hidden aspect-square">
+      <div className="card overflow-hidden aspect-square w-full max-w-sm md:max-w-md mx-auto md:mx-0">
         <SmartImage
           src={product.images[0]}
           seed={product.slug}
@@ -52,10 +52,6 @@ export default async function ProductDetail({
 
         <div className="mt-7">
           <AddToCartButton product={product} />
-        </div>
-
-        <div className="mt-5 text-sm font-medium text-[var(--ink-2)]">
-          {product.inStock ? '✅ In stock · Australia-wide delivery' : '⏳ Made to order'}
         </div>
       </div>
     </div>
