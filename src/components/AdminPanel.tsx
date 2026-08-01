@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import type { Product, Category, AboutData, ContactData, AboutBlock } from '@/lib/types';
 import { getMergedProducts, addLocalProduct, updateLocalProduct, deleteLocalProduct, saveLocalProducts, getMergedCategories, saveLocalCategories } from '@/lib/localProducts';
+import { DEFAULT_SEO_TITLE, DEFAULT_SEO_DESCRIPTION, normalizeProductSeo } from '@/lib/seoDefaults';
 import { getMergedAbout, saveLocalAbout, getMergedContact, saveLocalContact, addAboutBlock as addBlock, updateAboutBlock as updateBlockFn, deleteAboutBlock as removeBlock } from '@/lib/localContent';
 import { publishProducts, publishCategories, publishAbout, publishContact, getGithubToken, saveGithubToken, ACTIONS_URL } from '@/lib/githubSync';
 
@@ -108,8 +109,29 @@ export default function AdminPanel() {
     load();
   }
 
+  function batchApplySeo() {
+    const all = getMergedProducts();
+    const updated = all.map(normalizeProductSeo);
+    const changedCount = updated.filter((p, i) =>
+      p.seoTitle !== all[i].seoTitle || p.seoDescription !== all[i].seoDescription,
+    ).length;
+    if (changedCount === 0) {
+      alert('所有产品的 SEO 标题/描述已经是默认内容，无需更新。');
+      return;
+    }
+    if (!confirm(`将把 ${changedCount} 个产品的 SEO 标题和描述统一设为默认内容。确定继续？`)) return;
+    saveLocalProducts(updated);
+    setDirty(true);
+    setPubMsg('');
+    load();
+    if (editingId) {
+      const current = updated.find((p) => p.id === editingId);
+      if (current) setForm((prev) => ({ ...prev, seoTitle: current.seoTitle, seoDescription: current.seoDescription }));
+    }
+  }
+
   function resetForm() {
-    setForm({ name: '', category: categories[0] || 'HiVis', description: '', price: 0, images: [], colors: [], sizes: [], inStock: true, code: '' });
+    setForm({ name: '', category: categories[0] || 'HiVis', description: '', price: 0, images: [], colors: [], sizes: [], inStock: true, code: '', seoTitle: DEFAULT_SEO_TITLE, seoDescription: DEFAULT_SEO_DESCRIPTION });
   }
 
   // ===== 分类 CRUD =====
@@ -409,6 +431,28 @@ export default function AdminPanel() {
             </p>
           </div>
         </details>
+      </div>
+
+      {/* 批量 SEO 设置 */}
+      <div className="bg-white border rounded-xl p-4 space-y-3 shadow-sm">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <div className="font-semibold text-sm">批量设置 SEO</div>
+            <div className="text-xs text-gray-500 mt-0.5">
+              一键把当前所有产品的 SEO 标题/描述替换为默认内容；后续新增产品会自动预填。
+            </div>
+          </div>
+          <button
+            onClick={batchApplySeo}
+            className="px-4 py-2 rounded-lg bg-[var(--accent)] text-[var(--accent-ink)] font-semibold text-sm hover:opacity-90 transition whitespace-nowrap"
+          >
+            🔧 批量应用默认 SEO
+          </button>
+        </div>
+        <div className="text-xs text-gray-400 bg-gray-50 border rounded px-3 py-2">
+          标题：{DEFAULT_SEO_TITLE}<br />
+          描述：{DEFAULT_SEO_DESCRIPTION}
+        </div>
       </div>
 
       {/* 分类管理 */}

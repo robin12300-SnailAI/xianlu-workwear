@@ -1,5 +1,6 @@
 import type { Product } from './types';
 import defaultCategories from '../../data/categories.json';
+import { normalizeProductSeo } from './seoDefaults';
 
 const STORAGE_KEY = 'xianlu_products';
 const CATEGORY_KEY = 'xianlu_categories';
@@ -54,7 +55,7 @@ export function addLocalProduct(p: Omit<Product, 'id' | 'slug'>): Product {
   const products = getLocalProducts();
   const id = 'p' + Date.now().toString(36);
   const slug = slugify(p.name) + '-' + id.slice(-4);
-  const np: Product = { ...p, id, slug };
+  const np: Product = normalizeProductSeo({ ...p, id, slug } as Product);
   products.push(np);
   saveLocalProducts(products);
   return np;
