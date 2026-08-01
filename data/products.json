@@ -218,5 +218,27 @@
     "code": "90116",
     "id": "pms7fnrc8",
     "slug": "hi-vis-l-s-drill-shirt-90116-nrc8"
+  },
+  {
+    "name": "Stretch Cuffed Work Pants 1808",
+    "category": "pants",
+    "description": "FABRIC: 95% Cotton; 5% Spandex",
+    "price": 35,
+    "images": [
+      "https://robin12300-snailai.github.io/xianlu-workwear/images/products/pmsadmowk-1-msadxbru.png"
+    ],
+    "colors": [
+      "Black",
+      "Navy",
+      "Khaki",
+      "White"
+    ],
+    "sizes": [
+      "28-46"
+    ],
+    "inStock": true,
+    "code": "1808",
+    "id": "pmsadmowk",
+    "slug": "stretch-cuffed-work-pants-1808-mowk"
   }
 ]
