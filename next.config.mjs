@@ -9,6 +9,8 @@ const nextConfig = {
     unoptimized: isProd,   // 静态导出时禁用 Image 优化
     remotePatterns: isProd ? [] : [{ protocol: 'https', hostname: '**' }],
   },
+  // 强制固定 buildId，确保文件名变化以绕过 GitHub Pages CDN 缓存
+  generateBuildId: () => 'v0-3-5-seo-fix',
 };
 
 export default nextConfig;
