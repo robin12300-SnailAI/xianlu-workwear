@@ -17,8 +17,8 @@
       "XS-5XL"
     ],
     "inStock": true,
-    "seoTitle": "Xianlu Workwear | Quality Workwear & Safety Clothing Australia",
-    "seoDescription": "Xianlu Workwear supplies premium workwear, hi-vis clothing, uniforms, PPE, and safety apparel across Australia. Quality products, competitive prices, reliable service, and fast shipping.",
+    "seoTitle": "Polo | Xianlu Workwear",
+    "seoDescription": "FABRIC: 100%POLYESTER",
     "code": "1310"
   },
   {
@@ -43,8 +43,8 @@
       "3XL"
     ],
     "inStock": true,
-    "seoTitle": "Xianlu Workwear | Quality Workwear & Safety Clothing Australia",
-    "seoDescription": "Xianlu Workwear supplies premium workwear, hi-vis clothing, uniforms, PPE, and safety apparel across Australia. Quality products, competitive prices, reliable service, and fast shipping.",
+    "seoTitle": "jumper and Jacket | Xianlu Workwear",
+    "seoDescription": "FABRIC: 100% POLYESTER",
     "code": "J0082"
   },
   {
@@ -67,8 +67,8 @@
       "28-46"
     ],
     "inStock": true,
-    "seoTitle": "Xianlu Workwear | Quality Workwear & Safety Clothing Australia",
-    "seoDescription": "Xianlu Workwear supplies premium workwear, hi-vis clothing, uniforms, PPE, and safety apparel across Australia. Quality products, competitive prices, reliable service, and fast shipping.",
+    "seoTitle": "Pants | Xianlu Workwear",
+    "seoDescription": "Work Pants With Reinforced Patches, FABRIC: 100% Cotton",
     "code": "1120"
   },
   {
@@ -89,8 +89,8 @@
       "XS-5XL"
     ],
     "inStock": true,
-    "seoTitle": "Xianlu Workwear | Quality Workwear & Safety Clothing Australia",
-    "seoDescription": "Xianlu Workwear supplies premium workwear, hi-vis clothing, uniforms, PPE, and safety apparel across Australia. Quality products, competitive prices, reliable service, and fast shipping.",
+    "seoTitle": "Shirt | Xianlu Workwear",
+    "seoDescription": "TAPED HI VIS L/S DRILL SHIRT,FABRIC: 100%Cotton",
     "code": "J0078"
   },
   {
@@ -112,8 +112,8 @@
       "28-46"
     ],
     "inStock": true,
-    "seoTitle": "Xianlu Workwear | Quality Workwear & Safety Clothing Australia",
-    "seoDescription": "Xianlu Workwear supplies premium workwear, hi-vis clothing, uniforms, PPE, and safety apparel across Australia. Quality products, competitive prices, reliable service, and fast shipping.",
+    "seoTitle": "shorts | xianlu workwear",
+    "seoDescription": "Stretch Work Shorts, FABRIC: 95% Cotton; 5% Spandex",
     "code": "1805"
   },
   {
@@ -133,8 +133,8 @@
       "XS-5XL"
     ],
     "inStock": true,
-    "seoTitle": "Xianlu Workwear | Quality Workwear & Safety Clothing Australia",
-    "seoDescription": "Xianlu Workwear supplies premium workwear, hi-vis clothing, uniforms, PPE, and safety apparel across Australia. Quality products, competitive prices, reliable service, and fast shipping.",
+    "seoTitle": "Hospitality Apron | Xianlu Workwear",
+    "seoDescription": "TAPED HI VIS SAFTY VEST,FABRIC: 100% POLYESTER",
     "code": "11528"
   },
   {
@@ -154,13 +154,13 @@
       "XS-5XL"
     ],
     "inStock": true,
-    "seoTitle": "Xianlu Workwear | Quality Workwear & Safety Clothing Australia",
-    "seoDescription": "Xianlu Workwear supplies premium workwear, hi-vis clothing, uniforms, PPE, and safety apparel across Australia. Quality products, competitive prices, reliable service, and fast shipping.",
+    "seoTitle": "singlet | Xianlu Workwear",
+    "seoDescription": "HI VIS SINGLET, FABRIC: 100% POLYESTER",
     "code": "5092"
   },
   {
     "name": "HI VIS L/S POLO SHIRT 1312",
-    "category": "polo",
+    "category": "HiVis",
     "description": "HI VIS L/S POLO SHIRT, FABRIC: 100%POLYESTER",
     "price": 15,
     "images": [
@@ -173,15 +173,15 @@
       "XS-5XL"
     ],
     "inStock": true,
-    "seoTitle": "Xianlu Workwear | Quality Workwear & Safety Clothing Australia",
-    "seoDescription": "Xianlu Workwear supplies premium workwear, hi-vis clothing, uniforms, PPE, and safety apparel across Australia. Quality products, competitive prices, reliable service, and fast shipping.",
+    "seoTitle": "polo | xianlu workwear",
+    "seoDescription": "HI VIS L/S POLO SHIRT, FABRIC: 100%POLYESTER",
     "id": "pms4i3vcx",
     "slug": "hi-vis-l-s-polo-shirt-1312-3vcx",
     "code": "1312"
   },
   {
     "name": "HI VIS & WORK S/S POLO SHIRT 9060",
-    "category": "polo",
+    "category": "HiVis",
     "description": "FABRIC: 100% POLYESTER",
     "price": 15,
     "images": [
@@ -195,8 +195,8 @@
     ],
     "inStock": true,
     "code": "9060",
-    "seoTitle": "Xianlu Workwear | Quality Workwear & Safety Clothing Australia",
-    "seoDescription": "Xianlu Workwear supplies premium workwear, hi-vis clothing, uniforms, PPE, and safety apparel across Australia. Quality products, competitive prices, reliable service, and fast shipping.",
+    "seoTitle": "xianlu workwear",
+    "seoDescription": "premium workwear",
     "id": "pms7fjb2f",
     "slug": "hi-vis-work-s-s-polo-shirt-9060-jb2f"
   },
