@@ -33,7 +33,15 @@ export function getLocalProducts(): Product[] {
   if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as Product[];
+    if (raw) {
+      const parsed = JSON.parse(raw) as Product[];
+      const normalized = parsed.map(normalizeProductSeo);
+      // 如果有旧数据未统一，回写 localStorage
+      if (JSON.stringify(parsed) !== JSON.stringify(normalized)) {
+        saveLocalProducts(normalized);
+      }
+      return normalized;
+    }
   } catch {}
   return [];
 }
@@ -65,7 +73,7 @@ export function updateLocalProduct(id: string, p: Partial<Product>): void {
   const products = getLocalProducts();
   const idx = products.findIndex((x) => x.id === id);
   if (idx === -1) return;
-  products[idx] = { ...products[idx], ...p };
+  products[idx] = normalizeProductSeo({ ...products[idx], ...p });
   saveLocalProducts(products);
 }
 
@@ -78,10 +86,11 @@ export function deleteLocalProduct(id: string): void {
 import defaultProducts from '../../data/products.json';
 
 export function getMergedProducts(): Product[] {
-  if (typeof window === 'undefined') return defaultProducts as Product[];
+  if (typeof window === 'undefined') return (defaultProducts as Product[]).map(normalizeProductSeo);
   const local = getLocalProducts();
   if (local.length > 0) return local;
-  // 首次访问：把默认数据写入 localStorage
-  saveLocalProducts(defaultProducts as Product[]);
-  return defaultProducts as Product[];
+  // 首次访问：把默认数据统一 SEO 后写入 localStorage
+  const normalized = (defaultProducts as Product[]).map(normalizeProductSeo);
+  saveLocalProducts(normalized);
+  return normalized;
 }
