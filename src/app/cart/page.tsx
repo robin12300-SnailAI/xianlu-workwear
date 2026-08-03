@@ -5,7 +5,7 @@ import { useCart } from '@/components/CartProvider';
 import SmartImage from '@/components/SmartImage';
 
 export default function CartPage() {
-  const { items, total, updateQty, removeItem, clear } = useCart();
+  const { items, count, total, updateQty, removeItem, clear } = useCart();
 
   // ── Empty state ────────────────────────────────────────────
   if (items.length === 0) {
@@ -31,7 +31,7 @@ export default function CartPage() {
       {/* ── Page Header ─────────────────────────────────── */}
       <div className="cart-header">
         <h1 className="cart-title">Your Shopping Cart</h1>
-        <span className="cart-count-badge">{items.length} item{items.length !== 1 ? 's' : ''}</span>
+        <span className="cart-count-badge">{count} item{count !== 1 ? 's' : ''}</span>
       </div>
 
       {/* ── Desktop: side-by-side layout ─────────────────── */}
@@ -88,8 +88,12 @@ export default function CartPage() {
                         max={99}
                         value={it.qty}
                         onChange={(e) => {
-                          const v = parseInt(e.target.value, 10);
-                          if (!isNaN(v) && v >= 1 && v <= 99) updateQty(it.slug, v, it.color, it.size);
+                          const raw = e.target.value;
+                          if (raw === '') return; // allow clearing while typing
+                          const v = parseInt(raw, 10);
+                          if (Number.isNaN(v)) return;
+                          // Clamp instead of silently ignoring out-of-range input
+                          updateQty(it.slug, Math.min(99, Math.max(1, v)), it.color, it.size);
                         }}
                         className="qty-input"
                         aria-label="Quantity"
@@ -150,7 +154,8 @@ export default function CartPage() {
           </div>
 
           <div className="summary-note">
-            Prices are in AUD. Shipping calculated at checkout.
+            Prices are in AUD and exclude GST. Shipping and any
+            branding costs are confirmed on your quote.
           </div>
 
           <Link href="/checkout" className="btn-checkout">
@@ -279,9 +284,6 @@ export default function CartPage() {
         .col-action { text-align: center; }
 
         /* Item list */
-        .cart-item-list {
-          divide-y: divide-y var(--border);
-        }
         .cart-item-list > :not([hidden]) ~ :not([hidden]) {
           border-top: 1px solid var(--border);
         }

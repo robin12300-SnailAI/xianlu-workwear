@@ -316,6 +316,14 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
 
   // Success animation state
   const [added, setAdded] = useState(false);
+  const addedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Clear the pending redirect if the user navigates away first
+  useEffect(() => {
+    return () => {
+      if (addedTimer.current) clearTimeout(addedTimer.current);
+    };
+  }, []);
 
   // ── Derived: available sizes for current color ───────────────
   const getAvailableSizes = useCallback((): string[] => {
@@ -344,9 +352,12 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
   }, [color]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Can add to cart? ────────────────────────────────────────
+  // Every offered variant axis must be chosen. Previously a product with
+  // sizes but no colours short-circuited to `true`, letting an item be
+  // added with an empty size.
   const canAdd =
-    colors.length === 0 ||
-    (colors.length > 0 && color && (sizes.length === 0 || size));
+    (colors.length === 0 || Boolean(color)) &&
+    (sizes.length === 0 || Boolean(size));
 
   // Stock message
   const stockMessage = product.inStock
@@ -369,7 +380,8 @@ export default function AddToCartButton({ product, variantStock }: ProductSelect
 
     // Brief success feedback
     setAdded(true);
-    setTimeout(() => {
+    if (addedTimer.current) clearTimeout(addedTimer.current);
+    addedTimer.current = setTimeout(() => {
       setAdded(false);
       router.push('/cart');
     }, 600);

@@ -28,8 +28,8 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      aria-label="切换主题"
-      title="切换亮 / 暗主题"
+      aria-label={mounted && isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+      title={mounted && isDark ? 'Switch to light theme' : 'Switch to dark theme'}
       className="grid place-items-center w-9 h-9 rounded-full border border-[var(--border)] text-[var(--ink-2)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-colors"
     >
       {mounted && isDark ? (

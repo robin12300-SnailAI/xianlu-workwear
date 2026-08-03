@@ -37,9 +37,6 @@ export default function AdminLogin({ onLogin }: { onLogin: () => void }) {
       >
         登录
       </button>
-      <p className="text-xs text-gray-400 mt-3 text-center">
-        密码：<code className="bg-gray-100 px-1 rounded">xianlu2024</code>
-      </p>
     </div>
   );
 }
