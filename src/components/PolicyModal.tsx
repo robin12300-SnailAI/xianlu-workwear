@@ -1,19 +1,18 @@
 'use client';
 
-import { useEffect, type ReactNode } from 'react';
+import { useEffect } from 'react';
 
 interface PolicyModalProps {
   open: boolean;
   onClose: () => void;
   title: string;
-  children: ReactNode;
+  content: string; // HTML 富文本
 }
 
 /**
- * Reusable policy modal.
- * Used for Order Policy and Return and Refund Policy.
+ * Policy 弹窗。内容由后台维护并实时同步。
  */
-export default function PolicyModal({ open, onClose, title, children }: PolicyModalProps) {
+export default function PolicyModal({ open, onClose, title, content }: PolicyModalProps) {
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -61,8 +60,11 @@ export default function PolicyModal({ open, onClose, title, children }: PolicyMo
         </div>
 
         {/* Content */}
-        <div className="overflow-y-auto p-6 sm:p-8 space-y-5 text-[var(--ink-2)] leading-relaxed">
-          {children}
+        <div className="overflow-y-auto p-6 sm:p-8 text-[var(--ink-2)] leading-relaxed">
+          <div
+            className="policy-content"
+            dangerouslySetInnerHTML={{ __html: content }}
+          />
         </div>
 
         {/* Footer */}

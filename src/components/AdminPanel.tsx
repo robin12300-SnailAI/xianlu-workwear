@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import Link from 'next/link';
 import type { Product, Category, AboutData, ContactData, AboutBlock } from '@/lib/types';
 import { getMergedProducts, addLocalProduct, updateLocalProduct, deleteLocalProduct, saveLocalProducts, getMergedCategories, saveLocalCategories } from '@/lib/localProducts';
 import { DEFAULT_SEO_TITLE, DEFAULT_SEO_DESCRIPTION } from '@/lib/seoDefaults';
 import { getMergedAbout, saveLocalAbout, getMergedContact, saveLocalContact, addAboutBlock as addBlock, updateAboutBlock as updateBlockFn, deleteAboutBlock as removeBlock } from '@/lib/localContent';
 import { publishProducts, publishCategories, publishAbout, publishContact, getGithubToken, saveGithubToken, ACTIONS_URL } from '@/lib/githubSync';
 
-type AdminTab = 'products' | 'about' | 'contact';
+type AdminTab = 'products' | 'about' | 'contact' | 'policy';
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState<AdminTab>('products');
@@ -339,6 +340,7 @@ export default function AdminPanel() {
           { key: 'products' as const, label: '产品管理', icon: '📦' },
           { key: 'about' as const, label: '关于我们', icon: '🏢' },
           { key: 'contact' as const, label: '联系我们', icon: '📞' },
+          { key: 'policy' as const, label: '政策管理', icon: '📋' },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -804,6 +806,50 @@ export default function AdminPanel() {
                 </div>
               )}
             </div>
+          </div>
+        </>
+      )}
+
+      {/* ════════════════════════════════════════ */}
+      {/* ── Policy Tab ────────────────────────── */}
+      {/* ════════════════════════════════════════ */}
+      {activeTab === 'policy' && (
+        <>
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-bold">政策管理</h1>
+          </div>
+          <p className="text-xs text-gray-500">
+            点击下方按钮进入对应 Policy 的富文本编辑器。修改后保存即同步到前台弹窗（同一浏览器），点「发布到线上」后约 2-3 分钟对所有访客生效。两个 Policy 相互独立，互不影响。
+          </p>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <Link
+              href="/admin/policy?type=order"
+              className="group flex flex-col gap-2 bg-white border rounded-xl p-5 shadow-sm hover:border-[var(--accent)] hover:shadow-md transition"
+            >
+              <div className="flex items-center gap-2">
+                <span className="grid place-items-center w-10 h-10 rounded-lg bg-blue-100 text-blue-600 text-lg">📋</span>
+                <span className="font-semibold text-sm">Order Policy</span>
+              </div>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                编辑订单相关条款：下单流程、支付方式、配送时效、运费、订单修改等。
+              </p>
+              <span className="text-xs text-[var(--accent)] font-medium mt-1 group-hover:underline">前往编辑 →</span>
+            </Link>
+
+            <Link
+              href="/admin/policy?type=return"
+              className="group flex flex-col gap-2 bg-white border rounded-xl p-5 shadow-sm hover:border-[var(--accent)] hover:shadow-md transition"
+            >
+              <div className="flex items-center gap-2">
+                <span className="grid place-items-center w-10 h-10 rounded-lg bg-green-100 text-green-600 text-lg">↩️</span>
+                <span className="font-semibold text-sm">Return and Refund Policy</span>
+              </div>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                编辑退换货相关条款：消费者保障、瑕疵处理、无理由退换、退款流程等。
+              </p>
+              <span className="text-xs text-[var(--accent)] font-medium mt-1 group-hover:underline">前往编辑 →</span>
+            </Link>
           </div>
         </>
       )}

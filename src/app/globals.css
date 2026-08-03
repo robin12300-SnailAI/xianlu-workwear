@@ -277,3 +277,21 @@ img { background-color: var(--surface-2); }
 /* Hide scrollbar for category rail */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── 富文本编辑器（后台 Policy 编辑）───────────────────────────── */
+.policy-editor:empty::before {
+  content: attr(data-placeholder);
+  color: var(--muted);
+}
+.policy-editor h3 {
+  font-family: var(--font-head, Montserrat, sans-serif);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--ink);
+  margin: 1rem 0 0.4rem;
+}
+.policy-editor h3:first-child { margin-top: 0; }
+.policy-editor p { margin: 0 0 0.75rem; }
+.policy-editor ul, .policy-editor ol { margin: 0 0 0.75rem 1.25rem; padding: 0; }
+.policy-editor li { margin: 0.2rem 0; }
+.policy-editor a { color: var(--accent); text-decoration: underline; }

@@ -38,3 +38,9 @@ export interface ContactData {
   mapEmbedUrl: string; // Google Maps 嵌入 URL
   additionalInfo: string;
 }
+
+// ===== Policy 页面内容（Order Policy / Return and Refund Policy）=====
+// 整篇为一段 HTML 富文本，由后台富文本编辑器维护。
+export interface PolicyData {
+  content: string; // 支持 HTML 富文本
+}

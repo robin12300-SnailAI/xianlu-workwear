@@ -1,4 +1,4 @@
-import type { Product, AboutData, ContactData } from './types';
+import type { Product, AboutData, ContactData, PolicyData } from './types';
 
 // ===== 配置 =====
 const GH_OWNER = 'robin12300-SnailAI';
@@ -211,3 +211,20 @@ export async function publishContact(
 }
 
 export const ACTIONS_URL = `https://github.com/${GH_OWNER}/${GH_REPO}/actions`;
+
+// ===== 发布：Policy 页面内容（Order Policy / Return and Refund Policy）=====
+export async function publishPolicy(
+  type: 'order' | 'return',
+  data: PolicyData,
+  onProgress?: (msg: string) => void,
+): Promise<PolicyData> {
+  if (!getGithubToken()) {
+    throw new Error('尚未设置 GitHub Token，请先在「发布设置」里粘贴并保存 Token');
+  }
+  const path = type === 'order' ? 'data/order-policy.json' : 'data/return-refund-policy.json';
+  const label = type === 'order' ? 'Order Policy' : 'Return and Refund Policy';
+  onProgress?.(`正在提交 ${label} 数据 ${path} ...`);
+  const json = JSON.stringify(data, null, 2) + '\n';
+  await putFile(path, utf8ToBase64(json), `chore(admin): 后台更新 ${label} 内容`);
+  return data;
+}

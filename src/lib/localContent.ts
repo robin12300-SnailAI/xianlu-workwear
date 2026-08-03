@@ -1,9 +1,13 @@
-import type { AboutData, ContactData, AboutBlock } from './types';
+import type { AboutData, ContactData, AboutBlock, PolicyData } from './types';
 import defaultAbout from '../../data/about.json';
 import defaultContact from '../../data/contact.json';
+import defaultOrderPolicy from '../../data/order-policy.json';
+import defaultReturnPolicy from '../../data/return-refund-policy.json';
 
 const ABOUT_KEY = 'xianlu_about';
 const CONTACT_KEY = 'xianlu_contact';
+const ORDER_POLICY_KEY = 'xianlu_order_policy';
+const RETURN_POLICY_KEY = 'xianlu_return_policy';
 
 // ===== 关于我们 =====
 export function getLocalAbout(): AboutData | null {
@@ -58,6 +62,57 @@ export function resetLocalAbout(): void {
 export function resetLocalContact(): void {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(CONTACT_KEY);
+}
+
+// ===== Policy 页面内容（Order Policy / Return and Refund Policy）=====
+export function getLocalOrderPolicy(): PolicyData | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(ORDER_POLICY_KEY);
+    if (raw) return JSON.parse(raw) as PolicyData;
+  } catch {}
+  return null;
+}
+
+export function saveLocalOrderPolicy(data: PolicyData): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(ORDER_POLICY_KEY, JSON.stringify(data));
+}
+
+export function getMergedOrderPolicy(): PolicyData {
+  const fallback = defaultOrderPolicy as unknown as PolicyData;
+  if (typeof window === 'undefined') return fallback;
+  return getLocalOrderPolicy() ?? fallback;
+}
+
+export function getLocalReturnPolicy(): PolicyData | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(RETURN_POLICY_KEY);
+    if (raw) return JSON.parse(raw) as PolicyData;
+  } catch {}
+  return null;
+}
+
+export function saveLocalReturnPolicy(data: PolicyData): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(RETURN_POLICY_KEY, JSON.stringify(data));
+}
+
+export function getMergedReturnPolicy(): PolicyData {
+  const fallback = defaultReturnPolicy as unknown as PolicyData;
+  if (typeof window === 'undefined') return fallback;
+  return getLocalReturnPolicy() ?? fallback;
+}
+
+export function resetLocalOrderPolicy(): void {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(ORDER_POLICY_KEY);
+}
+
+export function resetLocalReturnPolicy(): void {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(RETURN_POLICY_KEY);
 }
 
 // ===== 内容块操作辅助 =====
