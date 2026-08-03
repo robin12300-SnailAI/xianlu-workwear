@@ -12,7 +12,7 @@ export default function Footer() {
   const [returnPolicyOpen, setReturnPolicyOpen] = useState(false);
   return (
     <footer className="mt-20 bg-[var(--surface)] border-t border-[var(--border)]">
-      <div className="container-x py-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+      <div className="container-x py-14 grid grid-cols-1 md:grid-cols-2 gap-10">
         {/* Brand */}
         <div className="lg:col-span-1">
           <div className="flex items-center gap-2.5 mb-4">
@@ -65,27 +65,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Newsletter */}
-        <div>
-          <h5 className="font-head font-semibold text-sm mb-4 text-[var(--ink)] uppercase tracking-wider">
-            Stay Connected
-          </h5>
-          <p className="text-sm text-[var(--ink-2)] mb-3 leading-relaxed">
-            Be first to hear about new ranges, restocks &amp; offers.
-          </p>
-          <form
-            className="flex gap-2"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <input
-              type="email"
-              required
-              placeholder="Your email"
-              className="flex-1 min-w-0 bg-[var(--surface-2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--ink)] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)]"
-            />
-            <button className="btn-primary px-4 py-2 text-sm">Join</button>
-          </form>
-        </div>
       </div>
 
       {/* Bottom bar */}
