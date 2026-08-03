@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/components/CartProvider';
-import SmartImage from '@/components/SmartImage';
 
 // ── Types ───────────────────────────────────────────────────
 interface ShippingInfo {
@@ -183,13 +182,11 @@ export default function CheckoutPage() {
       <h1 className="checkout-title">Checkout</h1>
 
       <form onSubmit={handleSubmit} className="checkout-form">
-        <div className="checkout-grid">
-          {/* ── Left Column: Forms ──────────────────────── */}
-          <div className="checkout-main">
+        <div className="checkout-main">
 
-            {/* ── Section: Contact Information ─────────── */}
-            <fieldset className="field-section">
-              <legend className="section-legend">Contact Information</legend>
+          {/* ── Section: Contact Information ─────────── */}
+          <fieldset className="field-section">
+            <legend className="section-legend">Contact Information</legend>
               <div className="form-row two-col">
                 <div className="field-group">
                   <label htmlFor="firstName" className="field-label">First Name <span className="required">*</span></label>
@@ -405,57 +402,6 @@ export default function CheckoutPage() {
                 ))}
               </div>
             </fieldset>
-          </div>
-
-          {/* ── Right Column: Order Summary ─────────────── */}
-          <aside className="checkout-summary">
-            <h2 className="summary-title">Order Summary</h2>
-
-            {/* Item list */}
-            <div className="summary-items">
-              {items.map((it, i) => (
-                <div key={`co-${i}`} className="summary-item">
-                  <div className="summary-item-left">
-                    <div className="summary-thumb-wrap">
-                      <SmartImage src={it.image} seed={it.slug} alt={it.name} className="summary-thumb" />
-                    </div>
-                    <div className="summary-item-info">
-                      <span className="summary-item-name">{it.name}</span>
-                      {[it.color, it.size].filter(Boolean).length > 0 && (
-                        <span className="summary-item-variant">
-                          {[it.color, it.size].filter(Boolean).join(' / ')}
-                        </span>
-                      )}
-                      <span className="summary-item-qty">&times;{it.qty}</span>
-                    </div>
-                  </div>
-                  <span className="summary-item-price">${(it.price * it.qty).toFixed(2)}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="summary-divider" />
-
-            {/* Totals */}
-            <div className="summary-totals">
-              <div className="summary-subtotal-row">
-                <span>Subtotal</span>
-                <span>${total.toFixed(2)}</span>
-              </div>
-              <div className="summary-shipping-row">
-                <span>Shipping</span>
-                <span className="shipping-tbd">Calculated at next step</span>
-              </div>
-            </div>
-
-            <div className="summary-divider" />
-
-            <div className="summary-total-row">
-              <span>Total</span>
-              <span className="total-value">${total.toFixed(2)}</span>
-            </div>
-
-            <p className="summary-currency-note">All prices in Australian Dollars (AUD)</p>
 
             {/* Error message */}
             {error && (
@@ -493,9 +439,8 @@ export default function CheckoutPage() {
               By placing this order you agree to our terms of service.
               Your information is secure and will never be shared.
             </p>
-          </aside>
-        </div>
-      </form>
+          </div>
+        </form>
 
       {/* ── Styles ─────────────────────────────────────────── */}
       <style jsx>{`
@@ -609,16 +554,11 @@ export default function CheckoutPage() {
         }
         .btn-primary-fill:hover { filter: brightness(1.08); }
 
-        /* Form Grid */
+        /* Form Layout */
         .checkout-form { margin-top: 0; }
-        .checkout-grid {
-          display: grid;
-          grid-template-columns: 1fr 380px;
-          gap: 2rem;
-          align-items: start;
-        }
-        @media (max-width: 960px) {
-          .checkout-grid { grid-template-columns: 1fr; }
+        .checkout-main {
+          max-width: 760px;
+          margin: 0 auto;
         }
 
         /* Field Sections */
@@ -780,130 +720,6 @@ export default function CheckoutPage() {
           color: var(--accent);
           flex-shrink: 0;
           margin-top: 0.1rem;
-        }
-
-        /* ── Order Summary Sidebar ────────────────────── */
-        .checkout-summary {
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: var(--radius-md);
-          padding: 1.5rem;
-          position: sticky;
-          top: 80px;
-        }
-        @media (max-width: 960px) {
-          .checkout-summary { position: static; }
-        }
-        .summary-title {
-          font-size: 1.05rem;
-          font-weight: 700;
-          color: var(--ink);
-          margin-bottom: 1rem;
-          padding-bottom: 0.75rem;
-          border-bottom: 1px solid var(--border);
-        }
-
-        /* Summary Items */
-        .summary-items {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-          max-height: 320px;
-          overflow-y: auto;
-          margin-bottom: 0.75rem;
-        }
-        .summary-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 0.75rem;
-        }
-        .summary-item-left {
-          display: flex;
-          align-items: center;
-          gap: 0.65rem;
-          min-width: 0;
-        }
-        .summary-thumb-wrap {
-          width: 44px;
-          height: 44px;
-          border-radius: var(--radius-sm);
-          overflow: hidden;
-          background: var(--surface-2);
-          border: 1px solid var(--border);
-          flex-shrink: 0;
-        }
-        .summary-thumb {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        .summary-item-info {
-          display: flex;
-          flex-direction: column;
-          gap: 0.08rem;
-          min-width: 0;
-        }
-        .summary-item-name {
-          font-size: 0.82rem;
-          font-weight: 600;
-          color: var(--ink);
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .summary-item-variant {
-          font-size: 0.72rem;
-          color: var(--muted);
-        }
-        .summary-item-qty {
-          font-size: 0.72rem;
-          color: var(--muted);
-        }
-        .summary-item-price {
-          font-weight: 650;
-          font-size: 0.88rem;
-          color: var(--ink);
-          white-space: nowrap;
-        }
-
-        .summary-divider {
-          height: 1px;
-          background: var(--border);
-          margin: 0.75rem 0;
-        }
-
-        /* Totals */
-        .summary-totals {
-          display: flex;
-          flex-direction: column;
-          gap: 0.45rem;
-        }
-        .summary-subtotal-row,
-        .summary-shipping-row {
-          display: flex;
-          justify-content: space-between;
-          font-size: 0.86rem;
-          color: var(--muted);
-        }
-        .shipping-tbd {
-          font-style: italic;
-          font-size: 0.8rem;
-        }
-        .summary-total-row {
-          display: flex;
-          justify-content: space-between;
-          font-size: 1.15rem;
-          font-weight: 800;
-          color: var(--ink);
-        }
-        .total-value {
-          color: var(--accent);
-        }
-        .summary-currency-note {
-          font-size: 0.74rem;
-          color: var(--muted);
-          margin-top: 0.5rem;
         }
 
         /* Error */
