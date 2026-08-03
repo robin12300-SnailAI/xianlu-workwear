@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/components/CartProvider';
+import { deliverInquiry } from '@/lib/orderSubmit';
 
 // ── Types ───────────────────────────────────────────────────
 interface ShippingInfo {
@@ -18,7 +20,7 @@ interface ShippingInfo {
   country: string;
 }
 
-type PaymentMethod = 'stripe' | 'bank_transfer' | 'quote_request';
+type PaymentMethod = 'bank_transfer' | 'quote_request';
 
 const INITIAL_SHIPPING: ShippingInfo = {
   firstName: '',
@@ -35,48 +37,21 @@ const INITIAL_SHIPPING: ShippingInfo = {
 
 export default function CheckoutPage() {
   const { items, total } = useCart();
+  const router = useRouter();
   const [shipping, setShipping] = useState<ShippingInfo>(INITIAL_SHIPPING);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('quote_request');
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [submitted, setSubmitted] = useState(false);
 
   // ── Empty cart guard ─────────────────────────────────────
-  if (items.length === 0 && !submitted) {
+  if (items.length === 0) {
     return (
       <div className="checkout-empty">
         <h2>Your cart is empty</h2>
         <p>Add some items before checking out.</p>
         <Link href="/products" className="btn-link-accent">Browse Products →</Link>
-      </div>
-    );
-  }
-
-  // ── Submitted success state ───────────────────────────────
-  if (submitted) {
-    return (
-      <div className="checkout-success">
-        <div className="success-icon-wrap">
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20 6L9 17l-5-5" />
-          </svg>
-        </div>
-        <h1>Order Received!</h1>
-        <p className="success-msg">
-          Thank you for your order. We&apos;ll review your details and get back to you shortly.
-          {paymentMethod === 'bank_transfer' && (
-            <> Bank transfer instructions will be sent to <strong>{shipping.email}</strong>.</>
-          )}
-          {paymentMethod === 'quote_request' && (
-            <> A formal quote will be prepared and sent to <strong>{shipping.email}</strong>.</>
-          )}
-        </p>
-        <div className="success-actions">
-          <Link href="/products" className="btn-primary-outline">Continue Shopping</Link>
-          <Link href="/" className="btn-primary-fill">Back to Home</Link>
-        </div>
       </div>
     );
   }
@@ -102,51 +77,49 @@ export default function CheckoutPage() {
       setLoading(false);
       return;
     }
-    if (!shipping.address || !shipping.city || !shipping.postcode) {
+    if (!shipping.address || !shipping.city || !shipping.state || !shipping.postcode) {
       setError('Please complete your shipping address.');
-      setLoading(false);
-      return;
-    }
-    if (!paymentMethod) {
-      setError('Please select a payment method.');
       setLoading(false);
       return;
     }
 
     try {
-      // Build order payload
-      const orderPayload = {
-        customer: { ...shipping },
+      // No online card payment yet — this is a simulated / offline payment flow.
+      // The enquiry is delivered to the business inbox, then we confirm to the user.
+      const result = await deliverInquiry({
+        kind: 'order',
+        customer: {
+          name: `${shipping.firstName} ${shipping.lastName}`.trim(),
+          email: shipping.email,
+          phone: shipping.phone || undefined,
+          company: shipping.company || undefined,
+          address: shipping.address,
+          city: shipping.city,
+          state: shipping.state,
+          postcode: shipping.postcode,
+          country: shipping.country,
+        },
         items,
         total,
-        paymentMethod,
+        paymentMethod:
+          paymentMethod === 'bank_transfer' ? 'Bank Transfer' : 'Quote Request',
         notes: notes.trim() || undefined,
+        logoFileName: logoFile?.name,
         createdAt: new Date().toISOString(),
-      };
+      });
 
-      // Try API endpoint; fall back to local success for static export
-      let apiSuccess = false;
       try {
-        const res = await fetch('/api/checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(orderPayload),
-        });
-        if (res.ok) apiSuccess = true;
+        sessionStorage.setItem('xianlu_last_ref', result.ref);
+        sessionStorage.setItem('xianlu_last_mailto', result.mailtoUrl);
       } catch {
-        // API not available (static export mode) — continue to success
+        // sessionStorage unavailable (private mode) — non-fatal
       }
 
-      // If Stripe selected and API available, redirect; otherwise show success
-      if (paymentMethod === 'stripe' && apiSuccess) {
-        // In a real setup, this would redirect to Stripe checkout
-        window.location.href = '/checkout/success';
-      } else {
-        setSubmitted(true);
-      }
+      // The success page clears the cart on mount, which avoids an
+      // "empty cart" flash here before the route transition completes.
+      router.push('/checkout/success');
     } catch (err) {
       setError((err as Error).message || 'Something went wrong. Please try again.');
-    } finally {
       setLoading(false);
     }
   }
@@ -162,11 +135,6 @@ export default function CheckoutPage() {
       id: 'bank_transfer',
       label: 'Bank Transfer',
       desc: 'Pay via direct bank transfer. We\'ll send account details after you place the order.',
-    },
-    {
-      id: 'stripe',
-      label: 'Credit / Debit Card',
-      desc: 'Pay securely online with Visa, Mastercard, or other cards.',
     },
   ];
 
@@ -331,7 +299,10 @@ export default function CheckoutPage() {
               <legend className="section-legend">Logo &amp; Customisation</legend>
               <div className="field-group">
                 <label htmlFor="logoUpload" className="field-label">Logo File</label>
-                <p className="field-hint">Upload your logo for embroidery or print. Accepted formats: PNG, JPG, SVG, PDF, EPS, AI.</p>
+                <p className="field-hint">
+                  Tell us which logo file you&apos;ll be using. Accepted formats: PNG, JPG, SVG, PDF, EPS, AI.
+                  We&apos;ll reply to your email so you can attach the artwork directly.
+                </p>
                 <div className="file-upload-area">
                   <input
                     id="logoUpload"
@@ -351,7 +322,7 @@ export default function CheckoutPage() {
                         <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M8 13V3m0 0L4 7m4-4l4 4" /><path d="M2 12v2a1 1 0 001 1h10a1 1 0 001-1v-2" />
                         </svg>
-                        <span>Click to upload or drag &amp; drop</span>
+                        <span>Click to select your logo file</span>
                       </>
                     )}
                   </div>
@@ -401,6 +372,10 @@ export default function CheckoutPage() {
                   </label>
                 ))}
               </div>
+              <p className="payment-note">
+                Online card payment is not enabled yet. No card details are collected
+                on this site and no charge is made when you submit this form.
+              </p>
             </fieldset>
 
             {/* Error message */}
@@ -430,7 +405,6 @@ export default function CheckoutPage() {
                 <>
                   {paymentMethod === 'quote_request' && 'Submit Quote Request'}
                   {paymentMethod === 'bank_transfer' && 'Place Order'}
-                  {paymentMethod === 'stripe' && 'Pay Now'}
                 </>
               )}
             </button>
@@ -490,69 +464,6 @@ export default function CheckoutPage() {
           font-size: 0.95rem;
         }
         .btn-link-accent:hover { text-decoration: underline; }
-
-        /* Success State */
-        .checkout-success {
-          text-align: center;
-          padding: 5rem 1.5rem;
-          max-width: 520px;
-          margin: 0 auto;
-        }
-        .success-icon-wrap {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          background: #dcfce7;
-          color: #16a34a;
-          margin-bottom: 1.5rem;
-        }
-        .checkout-success h1 {
-          font-size: 1.65rem;
-          font-weight: 800;
-          color: var(--ink);
-          margin-bottom: 0.75rem;
-        }
-        .success-msg {
-          color: var(--muted);
-          line-height: 1.65;
-          margin-bottom: 2rem;
-        }
-        .success-actions {
-          display: flex;
-          gap: 0.75rem;
-          justify-content: center;
-          flex-wrap: wrap;
-        }
-        .btn-primary-outline {
-          display: inline-flex;
-          align-items: center;
-          padding: 0.7rem 1.5rem;
-          border: 1.5px solid var(--border);
-          border-radius: var(--radius-sm);
-          font-weight: 600;
-          font-size: 0.92rem;
-          color: var(--ink);
-          transition: all 0.18s ease;
-        }
-        .btn-primary-outline:hover {
-          border-color: var(--accent);
-          color: var(--accent);
-        }
-        .btn-primary-fill {
-          display: inline-flex;
-          align-items: center;
-          padding: 0.7rem 1.5rem;
-          background: var(--accent);
-          color: var(--accent-ink);
-          border-radius: var(--radius-sm);
-          font-weight: 600;
-          font-size: 0.92rem;
-          transition: all 0.18s ease;
-        }
-        .btn-primary-fill:hover { filter: brightness(1.08); }
 
         /* Form Layout */
         .checkout-form { margin-top: 0; }
@@ -720,6 +631,12 @@ export default function CheckoutPage() {
           color: var(--accent);
           flex-shrink: 0;
           margin-top: 0.1rem;
+        }
+        .payment-note {
+          font-size: 0.76rem;
+          color: var(--muted);
+          line-height: 1.45;
+          margin-top: 0.8rem;
         }
 
         /* Error */

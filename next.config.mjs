@@ -10,7 +10,7 @@ const nextConfig = {
     remotePatterns: isProd ? [] : [{ protocol: 'https', hostname: '**' }],
   },
   // 强制固定 buildId，确保文件名变化以绕过 GitHub Pages CDN 缓存
-  generateBuildId: () => 'v0-3-14-checkout-no-summary',
+  generateBuildId: () => 'v0-3-15-order-email-mock-payment',
 };
 
 export default nextConfig;

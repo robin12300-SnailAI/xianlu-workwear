@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { deliverInquiry, ORDER_EMAIL } from '@/lib/orderSubmit';
 
 interface QuoteRequestModalProps {
   open: boolean;
@@ -121,8 +122,27 @@ export default function QuoteRequestModal({ open, onClose }: QuoteRequestModalPr
       submissions.push(record);
       localStorage.setItem('xianlu-quote-requests', JSON.stringify(submissions));
 
-      /* Simulate a brief network feel for UX */
-      await new Promise((r) => setTimeout(r, 600));
+      /* Deliver the enquiry to the business inbox */
+      await deliverInquiry({
+        kind: 'quote',
+        customer: {
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          company: form.company,
+        },
+        items: [],
+        total: 0,
+        notes: [
+          `Workwear type: ${form.workwearType}`,
+          `Quantity range: ${form.quantity}`,
+          form.notes.trim() ? `Notes: ${form.notes.trim()}` : '',
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        createdAt: new Date().toISOString(),
+      });
+
       setStatus('success');
     } catch {
       setStatus('error');
@@ -331,7 +351,7 @@ export default function QuoteRequestModal({ open, onClose }: QuoteRequestModalPr
           {status === 'error' && (
             <div className="rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3">
               Something went wrong while submitting. Please try again or email us at
-              {' '}info@xianlu.com.au.
+              {' '}{ORDER_EMAIL}.
             </div>
           )}
 
@@ -353,7 +373,7 @@ export default function QuoteRequestModal({ open, onClose }: QuoteRequestModalPr
               {status === 'submitting' ? (
                 <span className="inline-flex items-center gap-2">
                   <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                  Sending���
+                  Sending…
                 </span>
               ) : (
                 'Submit Request'

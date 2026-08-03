@@ -3,10 +3,13 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/components/CartProvider';
+import { ORDER_EMAIL } from '@/lib/orderSubmit';
 
 export default function SuccessPage() {
   const { clear } = useCart();
   const [done, setDone] = useState(false);
+  const [ref, setRef] = useState<string | null>(null);
+  const [mailtoUrl, setMailtoUrl] = useState<string | null>(null);
 
   // Clear cart on mount to prevent re-ordering
   useEffect(() => {
@@ -15,6 +18,16 @@ export default function SuccessPage() {
       setDone(true);
     }
   }, [done, clear]);
+
+  // Pick up the reference generated at checkout
+  useEffect(() => {
+    try {
+      setRef(sessionStorage.getItem('xianlu_last_ref'));
+      setMailtoUrl(sessionStorage.getItem('xianlu_last_mailto'));
+    } catch {
+      // sessionStorage unavailable — reference simply won't be shown
+    }
+  }, []);
 
   return (
     <div className="success-page">
@@ -27,6 +40,13 @@ export default function SuccessPage() {
 
         <h1 className="success-heading">Order Received!</h1>
 
+        {ref && (
+          <div className="success-ref">
+            <span className="success-ref-label">Your reference</span>
+            <span className="success-ref-code">{ref}</span>
+          </div>
+        )}
+
         <div className="success-body">
           <p className="success-primary-msg">
             Thank you for your order. We&apos;ve received your request and will get back to you shortly.
@@ -37,13 +57,18 @@ export default function SuccessPage() {
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" /><path d="M8 5v4M8 9h.01" />
               </svg>
-              <span><strong>Confirmation email</strong> will be sent to your registered email address.</span>
+              <span>
+                A copy of this order has been prepared for <strong>{ORDER_EMAIL}</strong>.
+                {mailtoUrl && (
+                  <> If it didn&apos;t send automatically, <a href={mailtoUrl} className="success-mailto">open it in your email app</a>.</>
+                )}
+              </span>
             </div>
             <div className="detail-item">
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="4" width="12" height="9" rx="1" /><path d="M14 7H2" /><path d="M5 4V2h6v2" />
               </svg>
-              <span><strong>Logo / customisation</strong> details can be added by replying to the confirmation email.</span>
+              <span><strong>Logo / customisation</strong> artwork can be attached when we reply to you.</span>
             </div>
             <div className="detail-item">
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -100,6 +125,34 @@ export default function SuccessPage() {
           line-height: 1.6;
           margin-bottom: 1.75rem;
         }
+        .success-ref {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.4rem 0.85rem;
+          border: 1px solid var(--border);
+          border-radius: 999px;
+          background: var(--surface-2);
+          margin-bottom: 1.25rem;
+        }
+        .success-ref-label {
+          font-size: 0.72rem;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: var(--muted);
+        }
+        .success-ref-code {
+          font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: var(--ink);
+        }
+        .success-mailto {
+          color: var(--accent);
+          font-weight: 600;
+          text-decoration: underline;
+        }
+        .success-mailto:hover { opacity: 0.8; }
         .success-details {
           display: flex;
           flex-direction: column;

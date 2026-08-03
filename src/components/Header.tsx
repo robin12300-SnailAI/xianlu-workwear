@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useCart } from './CartProvider';
 import Search from './Search';
+import ThemeToggle from './ThemeToggle';
 import ContactModal from './ContactModal';
 import ContactInfoModal from './ContactInfoModal';
 import categoriesData from '../../data/categories.json';
@@ -49,13 +50,13 @@ export default function Header() {
           ))}
           <button
             onClick={() => setContactOpen(true)}
-            className="nav-link uppercase tracking-wider text-[var(--accent)] hover:text-[var(--accent)]/80"
+            className="nav-link uppercase tracking-wider text-[var(--accent)] hover:opacity-80"
           >
             About Us
           </button>
           <button
             onClick={() => setContactInfoOpen(true)}
-            className="nav-link uppercase tracking-wider text-[var(--accent)] hover:text-[var(--accent)]/80"
+            className="nav-link uppercase tracking-wider text-[var(--accent)] hover:opacity-80"
           >
             Contact Us
           </button>
@@ -63,6 +64,7 @@ export default function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
+          <ThemeToggle />
           <Search />
           <Link
             href="/cart"
