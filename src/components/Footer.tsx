@@ -2,20 +2,15 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import ThemeToggle from './ThemeToggle';
 import ContactModal from './ContactModal';
 import ContactInfoModal from './ContactInfoModal';
-import categoriesData from '../../data/categories.json';
-
-const RAW_CATS: string[] = categoriesData as string[];
-const CATS = RAW_CATS.filter((c) => c.toLowerCase() !== 'contact us');
 
 export default function Footer() {
   const [contactOpen, setContactOpen] = useState(false);
   const [contactInfoOpen, setContactInfoOpen] = useState(false);
   return (
     <footer className="mt-20 bg-[var(--surface)] border-t border-[var(--border)]">
-      <div className="container-x py-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+      <div className="container-x py-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         {/* Brand */}
         <div className="lg:col-span-1">
           <div className="flex items-center gap-2.5 mb-4">
@@ -32,19 +27,6 @@ export default function Footer() {
           </p>
           <div className="flex gap-2 mt-4">
             <span className="chip">AS/NZS Certified</span>
-          </div>
-        </div>
-
-        {/* Shop */}
-        <div>
-          <h5 className="font-head font-semibold text-sm mb-4 text-[var(--ink)] uppercase tracking-wider">
-            Shop
-          </h5>
-          <div className="space-y-2.5">
-            <Link href="/products" className="footer-link block">All Products</Link>
-            {CATS.map((c) => (
-              <Link key={c} href={`/products?cat=${c}`} className="footer-link block">{c}</Link>
-            ))}
           </div>
         </div>
 
@@ -100,10 +82,6 @@ export default function Footer() {
       <div className="border-t border-[var(--border)]">
         <div className="container-x py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[var(--muted)]">
           <span>&copy; {new Date().getFullYear()} Xianlu Workwear. All rights reserved.</span>
-          <div className="flex items-center gap-3">
-            <span>Paddy&apos;s Market, Sydney NSW · Australia-wide delivery</span>
-            <ThemeToggle />
-          </div>
         </div>
       </div>
 
