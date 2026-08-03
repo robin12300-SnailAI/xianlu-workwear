@@ -142,29 +142,8 @@ export default function CartPage() {
           </div>
         </div>
 
-        {/* ── Order Summary Sidebar ─────────────────────── */}
-        <aside className="cart-summary">
-          <h2 className="summary-title">Order Summary</h2>
-
-          <div className="summary-rows">
-            {items.map((it, i) => (
-              <div key={`sum-${i}`} className="summary-row">
-                <span className="summary-label">
-                  {it.name}
-                  {[it.color, it.size].filter(Boolean).length > 0 && (
-                    <span className="summary-variant">
-                      {' '}[{[it.color, it.size].filter(Boolean).join('/')}]
-                    </span>
-                  )}
-                  <span className="summary-qty">&times;{it.qty}</span>
-                </span>
-                <span className="summary-value">${(it.price * it.qty).toFixed(2)}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="summary-divider" />
-
+        {/* ── Cart Total & Checkout ───────────────────── */}
+        <div className="cart-summary-bottom">
           <div className="summary-total">
             <span>Total</span>
             <span className="total-amount">${total.toFixed(2)}</span>
@@ -180,7 +159,7 @@ export default function CartPage() {
               <path d="M3 8h10M9 4l4 4-4 4" />
             </svg>
           </Link>
-        </aside>
+        </div>
       </div>
 
       {/* ── Styles ─────────────────────────────────────────── */}
@@ -261,15 +240,9 @@ export default function CartPage() {
 
         /* ── Layout ─────────────────────────────────── */
         .cart-layout {
-          display: grid;
-          grid-template-columns: 1fr 340px;
+          display: flex;
+          flex-direction: column;
           gap: 1.75rem;
-          align-items: start;
-        }
-        @media (max-width: 900px) {
-          .cart-layout {
-            grid-template-columns: 1fr;
-          }
         }
 
         /* ── Items Section ──────────────────────────── */
@@ -537,64 +510,19 @@ export default function CartPage() {
           background: #fef2f2;
         }
 
-        /* ── Order Summary Sidebar ───────────────────── */
-        .cart-summary {
+        /* ── Cart Total & Checkout ───────────────────── */
+        .cart-summary-bottom {
           background: var(--surface);
           border: 1px solid var(--border);
           border-radius: var(--radius-md);
-          padding: 1.5rem;
-          position: sticky;
-          top: 80px;
+          padding: 1.25rem;
+          max-width: 420px;
+          margin-left: auto;
         }
         @media (max-width: 900px) {
-          .cart-summary {
-            position: static;
+          .cart-summary-bottom {
+            max-width: 100%;
           }
-        }
-        .summary-title {
-          font-size: 1.1rem;
-          font-weight: 700;
-          color: var(--ink);
-          margin-bottom: 1rem;
-          padding-bottom: 0.75rem;
-          border-bottom: 1px solid var(--border);
-        }
-        .summary-rows {
-          display: flex;
-          flex-direction: column;
-          gap: 0.6rem;
-          max-height: 300px;
-          overflow-y: auto;
-          margin-bottom: 0.75rem;
-        }
-        .summary-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          gap: 0.5rem;
-          font-size: 0.86rem;
-        }
-        .summary-label {
-          color: var(--ink-2, var(--muted));
-          line-height: 1.35;
-        }
-        .summary-variant {
-          color: var(--muted);
-          font-size: 0.8rem;
-        }
-        .summary-qty {
-          color: var(--muted);
-          font-size: 0.8rem;
-        }
-        .summary-value {
-          font-weight: 600;
-          color: var(--ink);
-          white-space: nowrap;
-        }
-        .summary-divider {
-          height: 1px;
-          background: var(--border);
-          margin: 0.75rem 0;
         }
         .summary-total {
           display: flex;
@@ -614,7 +542,7 @@ export default function CartPage() {
           line-height: 1.4;
         }
         .btn-checkout {
-          display: flex;
+          display: inline-flex;
           align-items: center;
           justify-content: center;
           gap: 0.5rem;
