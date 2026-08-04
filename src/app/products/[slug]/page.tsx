@@ -10,6 +10,7 @@ import {
   productImage,
   productJsonLd,
 } from '@/lib/seo';
+import { buildProductSeo } from '@/lib/productSeo';
 
 // 静态导出：预生成所有产品页面
 export async function generateStaticParams() {
@@ -27,18 +28,21 @@ export async function generateMetadata({
 
   const url = absUrl(`/products/${product.slug}`);
   const image = productImage(product);
-  const description = product.seoDescription || product.description;
+
+  // Unique per product, derived from fabric / colours / sizes / price.
+  // The root layout template appends " | Xianlu Workwear" to `title`.
+  const seo = buildProductSeo(product);
 
   return {
-    title: product.seoTitle || product.name,
-    description,
+    title: seo.title,
+    description: seo.description,
     alternates: { canonical: url },
     openGraph: {
-      title: product.seoTitle || product.name,
-      description,
+      title: seo.fullTitle,
+      description: seo.description,
       url,
       type: 'website',
-      ...(image ? { images: [{ url: image, alt: product.name }] } : {}),
+      ...(image ? { images: [{ url: image, alt: seo.imageAlt }] } : {}),
     },
   };
 }
@@ -50,6 +54,8 @@ export default async function ProductDetail({
 }) {
   const product = await getProductBySlug(params.slug);
   if (!product) notFound();
+
+  const seo = buildProductSeo(product);
 
   return (
     <div className="grid md:grid-cols-2 gap-10">
@@ -72,7 +78,7 @@ export default async function ProductDetail({
         <SmartImage
           src={product.images[0]}
           seed={product.slug}
-          alt={product.seoDescription || product.name}
+          alt={seo.imageAlt}
           className="w-full h-full object-cover"
         />
       </div>

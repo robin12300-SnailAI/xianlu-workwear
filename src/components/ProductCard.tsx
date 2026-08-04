@@ -1,15 +1,20 @@
 import Link from 'next/link';
 import type { Product } from '@/lib/types';
 import SmartImage from './SmartImage';
+import { buildProductSeo } from '@/lib/productSeo';
 
 export default function ProductCard({ product }: { product: Product }) {
+  // Every card used to reuse the same boilerplate seoDescription as alt text,
+  // so all 12 images were indistinguishable to crawlers and screen readers.
+  const { imageAlt } = buildProductSeo(product);
+
   return (
     <Link href={`/products/${product.slug}`} className="card group block overflow-hidden">
       <div className="relative aspect-square overflow-hidden bg-[var(--surface-2)]">
         <SmartImage
           src={product.images[0]}
           seed={product.slug}
-          alt={product.seoDescription || product.name}
+          alt={imageAlt}
           className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
         />
         {product.inStock ? (

@@ -4,11 +4,34 @@ import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import type { Product, Category, AboutData, ContactData, AboutBlock } from '@/lib/types';
 import { getMergedProducts, addLocalProduct, updateLocalProduct, deleteLocalProduct, saveLocalProducts, getMergedCategories, saveLocalCategories } from '@/lib/localProducts';
-import { DEFAULT_SEO_TITLE, DEFAULT_SEO_DESCRIPTION } from '@/lib/seoDefaults';
+import { buildProductSeo } from '@/lib/productSeo';
 import { getMergedAbout, saveLocalAbout, getMergedContact, saveLocalContact, addAboutBlock as addBlock, updateAboutBlock as updateBlockFn, deleteAboutBlock as removeBlock } from '@/lib/localContent';
 import { publishProducts, publishCategories, publishAbout, publishContact, getGithubToken, saveGithubToken, ACTIONS_URL } from '@/lib/githubSync';
 
 type AdminTab = 'products' | 'about' | 'contact' | 'policy';
+
+/**
+ * Live preview of the SEO that will actually ship for the product being edited.
+ * Mirrors exactly what the build does, so the operator can see the generated
+ * title/description before publishing instead of guessing.
+ */
+function previewSeo(form: Partial<Product>) {
+  return buildProductSeo({
+    id: form.id || 'preview',
+    slug: form.slug || 'preview',
+    name: form.name || '',
+    category: form.category || '',
+    description: form.description || '',
+    price: typeof form.price === 'number' ? form.price : 0,
+    images: form.images || [],
+    colors: form.colors || [],
+    sizes: form.sizes || [],
+    inStock: form.inStock !== false,
+    code: form.code,
+    seoTitle: form.seoTitle,
+    seoDescription: form.seoDescription,
+  });
+}
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState<AdminTab>('products');
@@ -89,7 +112,12 @@ export default function AdminPanel() {
       );
       if (conflict) return alert(`产品码「${trimmedCode}」已存在于其它产品，请使用不同的码`);
     }
-    const payload: Partial<Product> = { name, category, description, price, images, colors, sizes, inStock, code: trimmedCode, seoTitle, seoDescription };
+    // 空字符串不落库：留空表示"用自动生成的 SEO"。
+    const payload: Partial<Product> = {
+      name, category, description, price, images, colors, sizes, inStock, code: trimmedCode,
+      seoTitle: (seoTitle || '').trim() || undefined,
+      seoDescription: (seoDescription || '').trim() || undefined,
+    };
     if (editingId) {
       updateLocalProduct(editingId, payload);
     } else {
@@ -111,7 +139,9 @@ export default function AdminPanel() {
   }
 
   function resetForm() {
-    setForm({ name: '', category: categories[0] || 'HiVis', description: '', price: 0, images: [], colors: [], sizes: [], inStock: true, code: '', seoTitle: DEFAULT_SEO_TITLE, seoDescription: DEFAULT_SEO_DESCRIPTION });
+    // SEO 留空即可：发布时会按产品名 / 面料 / 颜色 / 尺码自动生成，
+    // 只有需要特别定制文案时才手动填写。
+    setForm({ name: '', category: categories[0] || 'HiVis', description: '', price: 0, images: [], colors: [], sizes: [], inStock: true, code: '', seoTitle: '', seoDescription: '' });
   }
 
   // ===== 分类 CRUD =====
@@ -495,8 +525,44 @@ export default function AdminPanel() {
         <input placeholder="颜色(逗号分隔)" value={(form.colors || []).join(',')} onChange={(e) => setForm({ ...form, colors: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })} className="border rounded px-2 py-1 text-sm" />
         <input placeholder="尺码(逗号分隔)" value={(form.sizes || []).join(',')} onChange={(e) => setForm({ ...form, sizes: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })} className="border rounded px-2 py-1 text-sm" />
         <textarea placeholder="描述" value={form.description || ''} onChange={(e) => setForm({ ...form, description: e.target.value })} className="border rounded px-2 py-1 text-sm md:col-span-2" rows={2} />
-        <input placeholder="SEO 标题" value={form.seoTitle || ''} onChange={(e) => setForm({ ...form, seoTitle: e.target.value })} className="border rounded px-2 py-1 text-sm" />
-        <input placeholder="SEO 描述" value={form.seoDescription || ''} onChange={(e) => setForm({ ...form, seoDescription: e.target.value })} className="border rounded px-2 py-1 text-sm" />
+        {(() => {
+          const preview = previewSeo(form);
+          return (
+            <div className="md:col-span-2 border rounded p-3 bg-gray-50">
+              <div className="text-sm font-semibold text-gray-800">SEO（自动生成，通常无需填写）</div>
+              <p className="text-xs text-gray-600 mt-1">
+                留空即可。系统会按「产品名 / 面料 / 颜色 / 尺码 / 价格」为每个产品自动生成独一无二的标题和描述，
+                新增产品也一样。只有需要特别定制文案时才填下面两栏。
+              </p>
+
+              <div className="mt-2 text-xs text-gray-800 break-words">
+                <span className="text-gray-500">标题预览：</span>
+                {preview.fullTitle}
+                <span className="text-gray-400"> （{preview.fullTitle.length} 字符）</span>
+              </div>
+              <div className="mt-1 text-xs text-gray-800 break-words">
+                <span className="text-gray-500">描述预览：</span>
+                {preview.description}
+                <span className="text-gray-400"> （{preview.description.length} 字符）</span>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-2 mt-3">
+                <input
+                  placeholder="自定义 SEO 标题（可选，留空自动生成）"
+                  value={form.seoTitle || ''}
+                  onChange={(e) => setForm({ ...form, seoTitle: e.target.value })}
+                  className="border rounded px-2 py-1 text-sm"
+                />
+                <input
+                  placeholder="自定义 SEO 描述（可选，留空自动生成）"
+                  value={form.seoDescription || ''}
+                  onChange={(e) => setForm({ ...form, seoDescription: e.target.value })}
+                  className="border rounded px-2 py-1 text-sm"
+                />
+              </div>
+            </div>
+          );
+        })()}
 
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={!!form.inStock} onChange={(e) => setForm({ ...form, inStock: e.target.checked })} /> 有货

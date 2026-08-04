@@ -1,15 +1,38 @@
 import type { Product } from './types';
+import {
+  LEGACY_SEO_TITLE,
+  LEGACY_SEO_DESCRIPTION,
+  isCustomSeoValue,
+} from './productSeo';
 
-export const DEFAULT_SEO_TITLE = 'Xianlu Workwear | Quality Workwear & Safety Clothing Australia';
-export const DEFAULT_SEO_DESCRIPTION =
-  'Xianlu Workwear supplies premium workwear, hi-vis clothing, uniforms, PPE, and safety apparel across Australia. Quality products, competitive prices, reliable service, and fast shipping.';
+/**
+ * These constants used to be FORCED onto every product, which is exactly why
+ * all 12 pages shipped an identical title and description. They are kept only
+ * so we can recognise (and discard) the legacy value on existing records.
+ *
+ * Per-product SEO is now derived at render time by `buildProductSeo()` — see
+ * src/lib/productSeo.ts. Nothing needs to be stored.
+ */
+export const DEFAULT_SEO_TITLE = LEGACY_SEO_TITLE;
+export const DEFAULT_SEO_DESCRIPTION = LEGACY_SEO_DESCRIPTION;
 
-// 强制把每个产品的 SEO 统一为站点默认值（覆盖任何已存在的旧值）。
-// 用于：首次加载合并、读取 localStorage、新增/编辑产品时统一 SEO。
+/**
+ * Strip the legacy site-wide boilerplate so the generator takes over, while
+ * preserving any genuinely hand-written override.
+ *
+ * Previously this did the opposite: it overwrote whatever was there with the
+ * shared default on every load, create and update, so bespoke copy could never
+ * survive and every new product inherited the duplicate snippet.
+ */
 export function normalizeProductSeo(p: Product): Product {
-  return {
-    ...p,
-    seoTitle: DEFAULT_SEO_TITLE,
-    seoDescription: DEFAULT_SEO_DESCRIPTION,
-  };
+  const next: Product = { ...p };
+
+  if (!isCustomSeoValue(next.seoTitle, LEGACY_SEO_TITLE)) {
+    delete next.seoTitle;
+  }
+  if (!isCustomSeoValue(next.seoDescription, LEGACY_SEO_DESCRIPTION)) {
+    delete next.seoDescription;
+  }
+
+  return next;
 }

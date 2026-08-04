@@ -1,5 +1,6 @@
 import type { Product } from './types';
 import contact from '../../data/contact.json';
+import { buildProductSeo, normaliseColours } from './productSeo';
 
 /**
  * Canonical origin + basePath for the deployed site.
@@ -65,16 +66,18 @@ export function websiteJsonLd() {
 
 export function productJsonLd(product: Product) {
   const image = productImage(product);
+  const seo = buildProductSeo(product);
+  const colours = normaliseColours(product.colors);
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
-    description: product.seoDescription || product.description,
+    description: seo.description,
     ...(product.code ? { sku: product.code, mpn: product.code } : {}),
     ...(image ? { image: [image] } : {}),
     category: product.category,
     brand: { '@type': 'Brand', name: 'Xianlu Workwear' },
-    ...(product.colors?.length ? { color: product.colors.join(', ') } : {}),
+    ...(colours.length ? { color: colours.join(', ') } : {}),
     ...(product.sizes?.length ? { size: product.sizes.join(', ') } : {}),
     offers: {
       '@type': 'Offer',

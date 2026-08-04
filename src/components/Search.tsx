@@ -4,11 +4,35 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { Product } from '@/lib/types';
 import productsData from '../../data/products.json';
+import { buildProductSeo } from '@/lib/productSeo';
 
 const allProducts = productsData as Product[];
 
 function normalize(str: string): string {
   return str.toLowerCase().trim();
+}
+
+/**
+ * Every product used to store the identical SEO boilerplate, so terms like
+ * "australia" or "quality" scored against all 12 records and polluted the
+ * results. The generated text carries genuine per-product keywords instead
+ * (fabric composition, normalised colours), so it is worth indexing.
+ * Cached because the catalogue is static and this runs on every keystroke.
+ */
+const seoTextCache = new Map<string, { title: string; description: string }>();
+
+function seoTextFor(product: Product) {
+  const key = product.slug || product.id;
+  let cached = seoTextCache.get(key);
+  if (!cached) {
+    const seo = buildProductSeo(product);
+    cached = {
+      title: normalize(seo.title),
+      description: normalize(seo.description),
+    };
+    seoTextCache.set(key, cached);
+  }
+  return cached;
 }
 
 function calculateScore(product: Product, query: string): number {
@@ -22,8 +46,7 @@ function calculateScore(product: Product, query: string): number {
   const cat = normalize(product.category || '');
   const colors = normalize((product.colors || []).join(' '));
   const sizes = normalize((product.sizes || []).join(' '));
-  const seoTitle = normalize(product.seoTitle || '');
-  const seoDesc = normalize(product.seoDescription || '');
+  const { title: seoTitle, description: seoDesc } = seoTextFor(product);
 
   let score = 0;
 
