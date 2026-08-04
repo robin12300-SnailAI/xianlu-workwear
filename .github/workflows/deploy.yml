@@ -32,12 +32,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 静态导出不支持 API 路由、sitemap、robots
-      - name: Remove dynamic routes for static export
+      # 静态导出不支持 API 路由，构建前移除。
+      # 注意：sitemap.ts / robots.ts 是 metadata route，output:'export' 完全支持，
+      # 构建时会生成 out/sitemap.xml —— 不要删除，否则线上将没有 sitemap（404）。
+      - name: Remove unsupported routes for static export
         run: |
           rm -rf src/app/api
-          rm -f src/app/sitemap.ts
-          rm -f src/app/robots.ts
 
       - name: Build with Next.js static export
         run: npm run build
