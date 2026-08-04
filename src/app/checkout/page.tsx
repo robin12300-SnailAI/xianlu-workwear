@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/components/CartProvider';
+import AddressAutocomplete from '@/components/AddressAutocomplete';
 import { deliverInquiry } from '@/lib/orderSubmit';
 
 // ── Types ───────────────────────────────────────────────────
@@ -223,15 +224,33 @@ export default function CheckoutPage() {
             <fieldset className="field-section">
               <legend className="section-legend">Shipping Address</legend>
               <div className="field-group">
-                <label htmlFor="address" className="field-label">Street Address <span className="required">*</span></label>
-                <textarea
+                <AddressAutocomplete
                   id="address"
+                  label="Street Address"
                   required
-                  rows={2}
                   value={shipping.address}
-                  onChange={(e) => updateField('address', e.target.value)}
-                  className="field-input"
-                  placeholder="Unit / Building / Street name"
+                  placeholder="Start typing your street address"
+                  countryCode={
+                    shipping.country === 'Australia'
+                      ? 'au'
+                      : shipping.country === 'New Zealand'
+                        ? 'nz'
+                        : 'au'
+                  }
+                  onChange={(value) => updateField('address', value)}
+                  onSelect={(parsed) =>
+                    setShipping((prev) => ({
+                      ...prev,
+                      address: parsed.street,
+                      city: parsed.city,
+                      state: parsed.state,
+                      postcode: parsed.postcode,
+                      country:
+                        parsed.country === 'Australia' || parsed.country === 'New Zealand'
+                          ? parsed.country
+                          : prev.country,
+                    }))
+                  }
                 />
               </div>
               <div className="form-row three-col">
