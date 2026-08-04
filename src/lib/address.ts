@@ -45,13 +45,26 @@ const AU_STATE_ABBREVIATIONS: Record<string, string> = {
   'australian capital territory': 'ACT',
 };
 
-function normalizeState(raw: string | undefined, country: string): string {
-  if (!raw) return '';
+function normalizeState(
+  raw: string | undefined,
+  country: string,
+  isoCode?: string,
+): string {
   if (country.toLowerCase() === 'australia') {
-    const abbr = AU_STATE_ABBREVIATIONS[raw.trim().toLowerCase()];
-    if (abbr) return abbr;
+    // Nominatim exposes ISO 3166-2 codes such as "AU-VIC"; use it as the
+    // most reliable state indicator when available.
+    if (isoCode) {
+      const isoMatch = isoCode.match(/AU-([A-Z]{2,3})/i);
+      if (isoMatch) return isoMatch[1].toUpperCase();
+    }
+    if (raw) {
+      const abbr = AU_STATE_ABBREVIATIONS[raw.trim().toLowerCase()];
+      if (abbr) return abbr;
+      const upper = raw.trim().toUpperCase();
+      if (Object.values(AU_STATE_ABBREVIATIONS).includes(upper)) return upper;
+    }
   }
-  return raw.toUpperCase();
+  return raw ? raw.trim().toUpperCase() : '';
 }
 
 function extractStreet(addr: Record<string, string | undefined>): string {
@@ -69,6 +82,9 @@ function extractCity(addr: Record<string, string | undefined>): string {
     addr.suburb ||
     addr.town ||
     addr.city ||
+    addr.city_district ||
+    addr.village ||
+    addr.hamlet ||
     addr.municipality ||
     addr.district ||
     addr.county ||
@@ -121,7 +137,11 @@ class NominatimProvider implements AddressProvider {
     const parsed: ParsedAddress = {
       street: extractStreet(addr),
       city: extractCity(addr),
-      state: normalizeState(addr.state, country),
+      state: normalizeState(
+        addr.state,
+        country,
+        addr['ISO3166-2-lvl4'] || (item.iso3166_2_lvl4 as string | undefined),
+      ),
       postcode: addr.postcode || '',
       country,
       displayName: (item.display_name as string) || '',

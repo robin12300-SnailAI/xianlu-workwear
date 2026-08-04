@@ -89,12 +89,25 @@ export default function AddressAutocomplete({
     (index: number) => {
       const suggestion = suggestions[index];
       if (!suggestion) return;
-      onChange(suggestion.parsed.street);
-      onSelect(suggestion.parsed);
+
+      // If the user typed a leading house number (e.g. "4 Charlies Street")
+      // and the provider only returned the street-level match, keep the
+      // number so the full street address is preserved.
+      const leadingNumberMatch = value.match(
+        /^(\d+\s*\/\s*\d+|\d+[-/]\d+|\d+)\s+/,
+      );
+      let street = suggestion.parsed.street;
+      if (leadingNumberMatch && !/^\d/.test(street)) {
+        street = `${leadingNumberMatch[1].replace(/\s*\/\s*/, '/').trim()} ${street}`;
+      }
+
+      const parsed = { ...suggestion.parsed, street };
+      onChange(parsed.street);
+      onSelect(parsed);
       setOpen(false);
       inputRef.current?.blur();
     },
-    [suggestions, onChange, onSelect],
+    [suggestions, onChange, onSelect, value],
   );
 
   const handleKeyDown = useCallback(
