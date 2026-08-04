@@ -3,6 +3,13 @@ import type { Metadata } from 'next';
 import { getProductBySlug, getProducts } from '@/lib/products';
 import AddToCartButton from '@/components/AddToCartButton';
 import SmartImage from '@/components/SmartImage';
+import {
+  absUrl,
+  breadcrumbJsonLd,
+  jsonLdScript,
+  productImage,
+  productJsonLd,
+} from '@/lib/seo';
 
 // 静态导出：预生成所有产品页面
 export async function generateStaticParams() {
@@ -16,10 +23,23 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const product = await getProductBySlug(params.slug);
-  if (!product) return { title: '产品未找到' };
+  if (!product) return { title: 'Product Not Found' };
+
+  const url = absUrl(`/products/${product.slug}`);
+  const image = productImage(product);
+  const description = product.seoDescription || product.description;
+
   return {
     title: product.seoTitle || product.name,
-    description: product.seoDescription || product.description,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: product.seoTitle || product.name,
+      description,
+      url,
+      type: 'website',
+      ...(image ? { images: [{ url: image, alt: product.name }] } : {}),
+    },
   };
 }
 
@@ -33,6 +53,21 @@ export default async function ProductDetail({
 
   return (
     <div className="grid md:grid-cols-2 gap-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLdScript(productJsonLd(product))}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLdScript(
+          breadcrumbJsonLd([
+            { name: 'Home', path: '/' },
+            { name: 'Products', path: '/products' },
+            { name: product.name, path: `/products/${product.slug}` },
+          ])
+        )}
+      />
+
       <div className="card overflow-hidden aspect-square w-full max-w-sm md:max-w-md mx-auto md:mx-0">
         <SmartImage
           src={product.images[0]}

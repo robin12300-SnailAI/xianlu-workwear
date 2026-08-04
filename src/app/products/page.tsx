@@ -1,68 +1,68 @@
-'use client';
-
-import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { Suspense, useEffect, useState } from 'react';
-import type { Product } from '@/lib/types';
+import { Suspense } from 'react';
+import type { Metadata } from 'next';
 import { getProducts, getCategories } from '@/lib/products';
-import ProductCard from '@/components/ProductCard';
+import ProductsView from '@/components/ProductsView';
+import ProductsBrowser from '@/components/ProductsBrowser';
+import {
+  absUrl,
+  breadcrumbJsonLd,
+  itemListJsonLd,
+  jsonLdScript,
+} from '@/lib/seo';
 
-function ProductsContent() {
-  const searchParams = useSearchParams();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+export const metadata: Metadata = {
+  title: 'All Workwear Products',
+  description:
+    'Browse the full Xianlu Workwear range — hi-vis polos, work shirts, drill pants, shorts, jackets and vests. Australian workwear supplier with logo embroidery and printing.',
+  alternates: { canonical: absUrl('/products') },
+  openGraph: {
+    title: 'All Workwear Products | Xianlu Workwear',
+    description:
+      'Hi-vis polos, work shirts, drill pants, shorts, jackets and vests. Australian workwear supplier with logo embroidery and printing.',
+    url: absUrl('/products'),
+    type: 'website',
+  },
+};
 
-  useEffect(() => {
-    setProducts(getProducts());
-    setCategories(getCategories());
-  }, []);
-
-  const active = searchParams.get('cat');
-  const filtered = active ? products.filter((p) => p.category === active) : products;
+export default function ProductsPage() {
+  const products = getProducts();
+  const categories = getCategories();
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">所有产品</h1>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLdScript(itemListJsonLd(products))}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLdScript(
+          breadcrumbJsonLd([
+            { name: 'Home', path: '/' },
+            { name: 'Products', path: '/products' },
+          ])
+        )}
+      />
 
-      <div className="flex flex-wrap gap-2 mb-6">
-        <Link
-          href="/products"
-          className={`px-4 py-2 border rounded-full text-sm transition ${
-            !active ? 'bg-accent text-[var(--accent-ink)] border-accent' : 'bg-surface text-ink border-[var(--border)]'
-          }`}
-        >
-          All
-        </Link>
-        {categories.map((c) => (
-          <Link
-            key={c}
-            href={`/products?cat=${c}`}
-            className={`px-4 py-2 border rounded-full text-sm transition ${
-              active === c ? 'bg-accent text-[var(--accent-ink)] border-accent' : 'bg-surface text-ink border-[var(--border)]'
-            }`}
-          >
-            {c}
-          </Link>
-        ))}
-      </div>
+      <h1 className="text-2xl font-bold mb-4">All Products</h1>
 
-      {filtered.length === 0 ? (
-        <p className="text-gray-500">该分类暂无产品，去后台 /admin 添加吧。</p>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {filtered.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
-      )}
+      {/*
+        The fallback is the complete, unfiltered grid. `ProductsBrowser` reads
+        ?cat= via useSearchParams, which bails out of the static prerender —
+        so this fallback is exactly what ends up in the exported HTML and what
+        search engines index. Users then get the filtered view on hydration.
+      */}
+      <Suspense
+        fallback={
+          <ProductsView
+            products={products}
+            categories={categories}
+            active={null}
+          />
+        }
+      >
+        <ProductsBrowser products={products} categories={categories} />
+      </Suspense>
     </div>
-  );
-}
-
-export default function ProductsPage() {
-  return (
-    <Suspense fallback={<div className="py-10 text-center text-gray-400">Loading...</div>}>
-      <ProductsContent />
-    </Suspense>
   );
 }
