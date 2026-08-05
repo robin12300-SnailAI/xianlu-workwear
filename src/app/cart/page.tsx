@@ -547,21 +547,63 @@ export default function CartPage() {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 0.5rem;
+          gap: 0.55rem;
           width: 100%;
-          background: var(--accent);
-          color: var(--accent-ink);
-          font-weight: 700;
-          font-size: 1rem;
-          padding: 0.85rem 1.25rem;
-          border-radius: var(--radius-sm);
+          background: #0d0d0d;
+          color: #ffffff;
+          font-family: var(--font-body);
+          font-weight: 650;
+          font-size: 0.98rem;
+          letter-spacing: 0.01em;
+          padding: 0.95rem 1.5rem;
+          border: 1.5px solid transparent;
+          border-radius: 10px;
           margin-top: 1.25rem;
-          transition: all 0.22s ease;
+          cursor: pointer;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+          transition:
+            background-color 0.3s ease,
+            color 0.3s ease,
+            border-color 0.3s ease,
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
+          text-decoration: none;
+          -webkit-tap-highlight-color: transparent;
         }
         .btn-checkout:hover {
-          filter: brightness(1.08);
+          background: #2a2a2a;
+          color: #ffffff;
           transform: translateY(-1px);
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+        }
+        .btn-checkout:active {
+          background: #000000;
+          transform: translateY(0);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        }
+        .btn-checkout:focus-visible {
+          outline: 2px solid #0d0d0d;
+          outline-offset: 3px;
+        }
+        .btn-checkout svg {
+          transition: transform 0.3s ease;
+          flex-shrink: 0;
+        }
+        .btn-checkout:hover svg {
+          transform: translateX(3px);
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .btn-checkout,
+          .btn-checkout:hover svg {
+            transition: none;
+            animation: none;
+          }
+        }
+        @media (max-width: 480px) {
+          .btn-checkout {
+            font-size: 1rem;
+            padding: 1rem 1.4rem;
+          }
         }
       `}</style>
     </div>
